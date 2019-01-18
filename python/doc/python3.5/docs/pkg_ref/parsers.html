@@ -1,0 +1,562 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tensorrt.parsers &mdash; TensorRT 3.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/tensorrt_theme.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="TensorRT 3.0.2 documentation" href="../index.html"/>
+        <link rel="prev" title="tensorrt.lite" href="lite.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorRT
+          
+
+          
+            
+            <img src="../_static/nvlogo.svg" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the UFF Toolkit:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../uff/uff.html">uff</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../workflows/caffe_to_tensorrt.html">Using TensorRT to Optimize Caffe Models in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows/tf_to_tensorrt.html">Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows/manually_construct_tensorrt_engine.html">Manually Construct a TensorRT Engine</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="infer.html">tensorrt.infer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">tensorrt.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lite.html">tensorrt.lite</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">tensorrt.parsers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-tensorrt.parsers.caffeparser">Caffe Parser</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#caffeparser">CaffeParser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#blobnametotensor">BlobNameToTensor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#binaryprotoblob">BinaryProtoBlob</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pluginfactory">PluginFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-tensorrt.parsers.uffparser">UFF Parser</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#uffparser">UffParser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-uff-parser">create_uff_parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shutdown-protobuf-library">shutdown_protobuf_library</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TensorRT</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>tensorrt.parsers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/pkg_ref/parsers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
+}
+.admonition.warning .first {
+    background: #f0b37e;
+}
+.admonition.note .first {
+    background: #6ab0de;
+}
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="tensorrt-parsers">
+<h1>tensorrt.parsers<a class="headerlink" href="#tensorrt-parsers" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">parsers</span></code> package parsers for both Caffe and Universal Framework Format (UFF)</p>
+<span class="target" id="module-tensorrt.parsers"></span><p>Collection of model parsers</p>
+<div class="section" id="module-tensorrt.parsers.caffeparser">
+<span id="caffe-parser"></span><h2>Caffe Parser<a class="headerlink" href="#module-tensorrt.parsers.caffeparser" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="caffeparser">
+<h3>CaffeParser<a class="headerlink" href="#caffeparser" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tensorrt.parsers.caffeparser.CaffeParser">
+<em class="property">class </em><code class="descclassname">tensorrt.parsers.caffeparser.</code><code class="descname">CaffeParser</code><a class="headerlink" href="#tensorrt.parsers.caffeparser.CaffeParser" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="tensorrt.parsers.caffeparser.CaffeParser.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.CaffeParser.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">destroy()=0</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.caffeparser.CaffeParser.parse">
+<code class="descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.CaffeParser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">parse(const</span> <span class="pre">char</span> <span class="pre">*deploy,</span> <span class="pre">const</span> <span class="pre">char</span> <span class="pre">*model,</span> <span class="pre">nvinfer1::INetworkDefinition</span> <span class="pre">&amp;network,</span> <span class="pre">nvinfer1::DataType</span> <span class="pre">weightType)=0</span> <span class="pre">-&gt;</span> <span class="pre">const</span> <span class="pre">IBlobNameToTensor</span> <span class="pre">*</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.caffeparser.CaffeParser.parse_binary_proto">
+<code class="descname">parse_binary_proto</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.CaffeParser.parse_binary_proto" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">parseBinaryProto(const</span> <span class="pre">char</span> <span class="pre">*fileName)=0</span> <span class="pre">-&gt;</span> <span class="pre">IBinaryProtoBlob</span> <span class="pre">*</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.caffeparser.CaffeParser.set_plugin_factory">
+<code class="descname">set_plugin_factory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.CaffeParser.set_plugin_factory" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">setPluginFactory(IPluginFactory</span> <span class="pre">*factory)=0</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.caffeparser.CaffeParser.set_protobuf_buffer_size">
+<code class="descname">set_protobuf_buffer_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.CaffeParser.set_protobuf_buffer_size" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">setProtobufBufferSize(size_t</span> <span class="pre">size)=0</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="blobnametotensor">
+<h3>BlobNameToTensor<a class="headerlink" href="#blobnametotensor" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tensorrt.parsers.caffeparser.BlobNameToTensor">
+<em class="property">class </em><code class="descclassname">tensorrt.parsers.caffeparser.</code><code class="descname">BlobNameToTensor</code><a class="headerlink" href="#tensorrt.parsers.caffeparser.BlobNameToTensor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="tensorrt.parsers.caffeparser.BlobNameToTensor.find">
+<code class="descname">find</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.BlobNameToTensor.find" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">find(const</span> <span class="pre">char</span> <span class="pre">*name)</span> <span class="pre">const</span> <span class="pre">=0</span> <span class="pre">-&gt;</span> <span class="pre">nvinfer1::ITensor</span> <span class="pre">*</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="binaryprotoblob">
+<h3>BinaryProtoBlob<a class="headerlink" href="#binaryprotoblob" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tensorrt.parsers.caffeparser.BinaryProtoBlob">
+<em class="property">class </em><code class="descclassname">tensorrt.parsers.caffeparser.</code><code class="descname">BinaryProtoBlob</code><a class="headerlink" href="#tensorrt.parsers.caffeparser.BinaryProtoBlob" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="tensorrt.parsers.caffeparser.BinaryProtoBlob.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.BinaryProtoBlob.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">destroy()=0</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.caffeparser.BinaryProtoBlob.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.BinaryProtoBlob.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">getData()=0</span> <span class="pre">-&gt;</span> <span class="pre">const</span> <span class="pre">void</span> <span class="pre">*</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.caffeparser.BinaryProtoBlob.get_data_type">
+<code class="descname">get_data_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.BinaryProtoBlob.get_data_type" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">getDataType()=0</span> <span class="pre">-&gt;</span> <span class="pre">nvinfer1::DataType</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.caffeparser.BinaryProtoBlob.get_dimensions">
+<code class="descname">get_dimensions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.BinaryProtoBlob.get_dimensions" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">getDimensions()=0</span> <span class="pre">-&gt;</span> <span class="pre">nvinfer1::DimsNCHW</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="pluginfactory">
+<h3>PluginFactory<a class="headerlink" href="#pluginfactory" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tensorrt.parsers.caffeparser.PluginFactory">
+<em class="property">class </em><code class="descclassname">tensorrt.parsers.caffeparser.</code><code class="descname">PluginFactory</code><a class="headerlink" href="#tensorrt.parsers.caffeparser.PluginFactory" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="tensorrt.parsers.caffeparser.PluginFactory.create_plugin">
+<code class="descname">create_plugin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.PluginFactory.create_plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">createPlugin(const</span> <span class="pre">char</span> <span class="pre">*layerName,</span> <span class="pre">const</span> <span class="pre">nvinfer1::Weights</span> <span class="pre">*weights,</span> <span class="pre">int</span> <span class="pre">nbWeights)=0</span> <span class="pre">-&gt;</span> <span class="pre">nvinfer1::IPlugin</span> <span class="pre">*</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.caffeparser.PluginFactory.is_plugin">
+<code class="descname">is_plugin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.caffeparser.PluginFactory.is_plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">isPlugin(const</span> <span class="pre">char</span> <span class="pre">*layerName)=0</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-tensorrt.parsers.uffparser">
+<span id="uff-parser"></span><h2>UFF Parser<a class="headerlink" href="#module-tensorrt.parsers.uffparser" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uffparser">
+<h3>UffParser<a class="headerlink" href="#uffparser" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="tensorrt.parsers.uffparser.UffParser">
+<em class="property">class </em><code class="descclassname">tensorrt.parsers.uffparser.</code><code class="descname">UffParser</code><a class="headerlink" href="#tensorrt.parsers.uffparser.UffParser" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="tensorrt.parsers.uffparser.UffParser.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.UffParser.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">destroy()=0</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.uffparser.UffParser.get_uff_required_version_major">
+<code class="descname">get_uff_required_version_major</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.UffParser.get_uff_required_version_major" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">getUffRequiredVersionMajor()=0</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p>
+<p>Return Version Major of the UFF.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.uffparser.UffParser.get_uff_required_version_minor">
+<code class="descname">get_uff_required_version_minor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.UffParser.get_uff_required_version_minor" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">getUffRequiredVersionMinor()=0</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p>
+<p>Return Version Minor of the UFF.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.uffparser.UffParser.get_uff_required_version_patch">
+<code class="descname">get_uff_required_version_patch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.UffParser.get_uff_required_version_patch" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">getUffRequiredVersionPatch()=0</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p>
+<p>Return Patch Version of the UFF.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.uffparser.UffParser.parse">
+<code class="descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.UffParser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">parse(const</span> <span class="pre">char</span> <span class="pre">*file,</span> <span class="pre">nvinfer1::INetworkDefinition</span> <span class="pre">&amp;network,</span> <span class="pre">nvinfer1::DataType</span> <span class="pre">weightsType=nvinfer1::DataType::kFLOAT)=0</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
+<p>parse a UFF file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file</strong> (<em>*</em>) – file name of the UFF file</li>
+<li><strong>network</strong> (<em>*</em>) – network in which the UFFParser will fill the layers</li>
+<li><strong>weightsType</strong> (<em>*</em>) – the type on which the weights will transformed in</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.uffparser.UffParser.parse_buffer">
+<code class="descname">parse_buffer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.UffParser.parse_buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">parseBuffer(const</span> <span class="pre">char</span> <span class="pre">*buffer,</span> <span class="pre">std::size_t</span> <span class="pre">size,</span> <span class="pre">nvinfer1::INetworkDefinition</span> <span class="pre">&amp;network,</span> <span class="pre">nvinfer1::DataType</span> <span class="pre">weightsType=nvinfer1::DataType::kFLOAT)=0</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
+<p>parse a UFF buffer, useful if the file already live in memory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>buffer</strong> (<em>*</em>) – buffer of the UFF file</li>
+<li><strong>size</strong> (<em>*</em>) – size of buffer of the UFF file</li>
+<li><strong>network</strong> (<em>*</em>) – network in which the UFFParser will fill the layers</li>
+<li><strong>weightsType</strong> (<em>*</em>) – the type on which the weights will transformed in</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.uffparser.UffParser.parse_from_file">
+<code class="descname">parse_from_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.UffParser.parse_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">parse(const</span> <span class="pre">char</span> <span class="pre">*file,</span> <span class="pre">nvinfer1::INetworkDefinition</span> <span class="pre">&amp;network,</span> <span class="pre">nvinfer1::DataType</span> <span class="pre">weightsType=nvinfer1::DataType::kFLOAT)=0</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
+<p>parse a UFF file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file</strong> (<em>*</em>) – file name of the UFF file</li>
+<li><strong>network</strong> (<em>*</em>) – network in which the UFFParser will fill the layers</li>
+<li><strong>weightsType</strong> (<em>*</em>) – the type on which the weights will transformed in</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.uffparser.UffParser.register_input">
+<code class="descname">register_input</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.UffParser.register_input" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">registerInput(const</span> <span class="pre">char</span> <span class="pre">*inputName,</span> <span class="pre">nvinfer1::DimsCHW</span> <span class="pre">inputDims,</span> <span class="pre">UffInputOrder</span> <span class="pre">inputOrder=UffInputOrder::kNCHW)=0</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
+<p>register an input name of a UFF network with the associated Dimensions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>inputName</strong> (<em>*</em>) – input name</li>
+<li><strong>inputDims</strong> (<em>*</em>) – input Dimensions, always provide your dimensions in CHW even if your network input was in HWC in yout original framework.</li>
+<li><strong>inputOrder</strong> (<em>*</em>) – input order on which the framework input was originally</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.parsers.uffparser.UffParser.register_output">
+<code class="descname">register_output</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.UffParser.register_output" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">registerOutput(const</span> <span class="pre">char</span> <span class="pre">*outputName)=0</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p>
+<p>register an output name of a UFF network</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outputName</strong> (<em>*</em>) – output name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="create-uff-parser">
+<h3>create_uff_parser<a class="headerlink" href="#create-uff-parser" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="tensorrt.parsers.uffparser.create_uff_parser">
+<code class="descclassname">tensorrt.parsers.uffparser.</code><code class="descname">create_uff_parser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.create_uff_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">createUffParser()</span> <span class="pre">-&gt;</span> <span class="pre">IUffParser</span> <span class="pre">*</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="shutdown-protobuf-library">
+<h3>shutdown_protobuf_library<a class="headerlink" href="#shutdown-protobuf-library" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="tensorrt.parsers.uffparser.shutdown_protobuf_library">
+<code class="descclassname">tensorrt.parsers.uffparser.</code><code class="descname">shutdown_protobuf_library</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tensorrt.parsers.uffparser.shutdown_protobuf_library" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">shutdownProtobufLibrary(void)</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="lite.html" class="btn btn-neutral" title="tensorrt.lite" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, NVIDIA Corporation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

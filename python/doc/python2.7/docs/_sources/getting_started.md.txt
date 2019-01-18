@@ -1,0 +1,43 @@
+# Getting Started with TensorRT in Python 
+
+TensorRT 3.0.2 includes support for Python, allowing developers to integrate a TensorRT
+inference engine into a python development enviorment or to experiment with TensorRT
+in an accessible fashion.
+
+TensorRT 3.0.2 also includes the Universial Framework Format (UFF), a way to convert 
+models trained in Tensorflow and soon other framworks like Caffe2 to a single 
+model format. TensorRT is also now able to generate engines from UFF models. 
+
+## Installing the TensorRT Python API and the UFF Toolkit
+
+## Use Cases
+
+There are a couple use cases for which the Python API for TensorRT excels at. 
+
+All of these are relative to the $PYTHON_ROOT directory. This directory is
+dependent on how TensorRT in python was installed.
+ - Linux install via pip with --user option: ~/.local/lib/python<version>/site-packages
+ - Linux install via pip without --user option: /usr/local/lib/python<version>/dist-packages
+ - Linux install via debian: /usr/lib/python<version>/dist-packages
+
+We have included a couple sample applications with the TensorRT Python package
+which cover many of these use cases. 
+
+1. There is an existing Tensorflow model that a developer wants to try out with 
+   TensorRT. 
+    - There is an example located in ```$PYTHON_ROOT/tensorrt/examples/tf_to_trt```
+      which explains how to go from a Tensorflow model through UFF using the UFF toolkit to a TensorRT engine 
+      and execute inference. 
+      
+2. There is a Caffe1 model that a developer want to try out with TensorRT
+    - There is an example located in ```$PYTHON_ROOT/tensorrt/examples/caffe_to_trt```
+      which explains how to go from a Caffe model to a TensorRT engine 
+      and execute inference. 
+      
+3. A developer wants to deploy a TensorRT engine as a part of a larger application such as a web backend 
+    - There is an example located in ```$PYTHON_ROOT/tensorrt/examples/resnet_as_a_service```
+      which explains how to approach creating a TensorRT engine and integrating it into a REST API
+      
+4. A developer wants to try out TensorRT with a model trained with a framework not supported by UFF or not trained by Caffe. 
+    - There is an example located in ```$PYTHON_ROOT/tensorrt/examples/pytorch_to_trt```
+      which explains how to approach creating a TensorRT engine from a model trained with a numpy compatiable framework

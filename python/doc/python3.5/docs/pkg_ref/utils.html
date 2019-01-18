@@ -1,0 +1,515 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tensorrt.utils &mdash; TensorRT 3.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/tensorrt_theme.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="TensorRT 3.0.2 documentation" href="../index.html"/>
+        <link rel="next" title="tensorrt.lite" href="lite.html"/>
+        <link rel="prev" title="tensorrt.infer" href="infer.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorRT
+          
+
+          
+            
+            <img src="../_static/nvlogo.svg" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the UFF Toolkit:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../uff/uff.html">uff</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../workflows/caffe_to_tensorrt.html">Using TensorRT to Optimize Caffe Models in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows/tf_to_tensorrt.html">Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows/manually_construct_tensorrt_engine.html">Manually Construct a TensorRT Engine</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="infer.html">tensorrt.infer</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">tensorrt.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#parsing-utilities">Parsing Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#caffe-model-to-tensorrt-engine">Caffe Model to TensorRT Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uff-model-stream-to-tensorrt-engine">UFF Model Stream to TensorRT Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uff-file-to-tensorrt-engine">UFF File to TensorRT Engine</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#saving-and-loading-models">Saving and Loading Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#load-engine-from-file">Load Engine from File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#save-engine-to-file">Save Engine to File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#load-weights-from-file">Load Weights from File</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lite.html">tensorrt.lite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers.html">tensorrt.parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TensorRT</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>tensorrt.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/pkg_ref/utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
+}
+.admonition.warning .first {
+    background: #f0b37e;
+}
+.admonition.note .first {
+    background: #6ab0de;
+}
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="tensorrt-utils">
+<h1>tensorrt.utils<a class="headerlink" href="#tensorrt-utils" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">utils</span></code> package contains higher level code designed to remove much of the boilder plate
+needed to make a TensorRT engine.</p>
+<span class="target" id="module-tensorrt.utils"></span><p>Utility functions to simplify development</p>
+<div class="section" id="parsing-utilities">
+<h2>Parsing Utilities<a class="headerlink" href="#parsing-utilities" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="caffe-model-to-tensorrt-engine">
+<h3>Caffe Model to TensorRT Engine<a class="headerlink" href="#caffe-model-to-tensorrt-engine" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="tensorrt.utils.caffe_to_trt_engine">
+<code class="descclassname">tensorrt.utils.</code><code class="descname">caffe_to_trt_engine</code><span class="sig-paren">(</span><em>logger</em>, <em>deploy_file</em>, <em>model_file</em>, <em>max_batch_size</em>, <em>max_workspace_size</em>, <em>output_layers</em>, <em>datatype=&lt;DataType.FLOAT: 0&gt;</em>, <em>plugin_factory=None</em>, <em>calibrator=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/utils/_utils.html#caffe_to_trt_engine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.utils.caffe_to_trt_engine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a Caffe model and create an engine for inference</p>
+<p>Takes a Caffe model prototxt and caffemodel, name(s) of the output layer(s), and engine settings
+to create a engine that can be used for inference</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>logger tensorrt.infer.Logger</strong> (<em>-</em>) – A logger is needed to monitor the progress of building the engine</li>
+<li><strong>deploy_file str</strong> (<em>-</em>) – Path to caffe model prototxt</li>
+<li><strong>model_file str</strong> (<em>-</em>) – Path to caffe caffemodel file</li>
+<li><strong>max_batch_size int</strong> (<em>-</em>) – Maximum size of batch allowed for the engine</li>
+<li><strong>max_workspace_size int</strong> (<em>-</em>) – Maximum size of engine maxWorkspaceSize</li>
+<li><strong>output_layers</strong><strong> [</strong><strong>str</strong><strong>]</strong> (<em>-</em>) – List of output layer names</li>
+<li><strong>datatype tensorrt.infer.DataType</strong> (<em>-</em>) – Operating data type of the engine, can be FP32, FP16 if supported on the platform, or INT8 with calibrator. Default: <code class="docutils literal"><span class="pre">tensorrt.infer.DataType.FLOAT</span></code></li>
+<li><strong>plugin_factory tensort.infer.PluginFactory  *</strong> (<em>-</em>) – Custom layer factory. Default:<code class="docutils literal"><span class="pre">None</span></code></li>
+<li><strong>calibrator INT8 calibrator *</strong> (<em>-</em>) – (currently unsupported in python). Default:<code class="docutils literal"><span class="pre">None</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Returns</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">tensorrt.infer.CudaEngine</span></code>: An engine that can be used to execute inference</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="uff-model-stream-to-tensorrt-engine">
+<h3>UFF Model Stream to TensorRT Engine<a class="headerlink" href="#uff-model-stream-to-tensorrt-engine" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="tensorrt.utils.uff_to_trt_engine">
+<code class="descclassname">tensorrt.utils.</code><code class="descname">uff_to_trt_engine</code><span class="sig-paren">(</span><em>logger</em>, <em>stream</em>, <em>parser</em>, <em>max_batch_size</em>, <em>max_workspace_size</em>, <em>datatype=&lt;DataType.FLOAT: 0&gt;</em>, <em>plugin_factory=None</em>, <em>calibrator=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/utils/_utils.html#uff_to_trt_engine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.utils.uff_to_trt_engine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a UFF Model Stream and generates an engine</p>
+<p>Takes a UFF Stream (created with a UFF exporter) and generates a TensorRT engine that
+can then be saved or executed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logger tensorrt.infer.Logger</strong> (<em>-</em>) – Logging system for the application</li>
+<li><strong>stream</strong><strong> [</strong><strong>Py2</strong><strong>]</strong><strong>str/</strong><strong>[</strong><strong>Py3</strong><strong>]</strong><strong>bytes</strong> (<em>-</em>) – Serialized UFF graph</li>
+<li><strong>parser tensorrt.parsers.uffparser.UffParser</strong> (<em>-</em>) – uff parser</li>
+<li><strong>max_batch_size int</strong> (<em>-</em>) – Maximum batch size</li>
+<li><strong>max_workspace_size int</strong> (<em>-</em>) – Maximum workspace size</li>
+<li><strong>datatype tensorrt.infer.DataType</strong> (<em>-</em>) – Operating data type of the engine, can be FP32, FP16 if supported on the platform, or INT8 with calibrator. Default: <code class="docutils literal"><span class="pre">tensorrt.infer.DataType.FLOAT</span></code></li>
+<li><strong>plugins_factory tensorrt.infer.PluginFactory *</strong> (<em>-</em>) – Custom layer factory. Default: <code class="docutils literal"><span class="pre">None</span></code></li>
+<li><strong>calibrator tensorrt.infer.Int8Calibrator *</strong> (<em>-</em>) – Currently unsupported. Default: <code class="docutils literal"><span class="pre">None</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">TensorRT Engine to be used or excuted</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">tensorrt.infer.CudaEngine</span></code></li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="uff-file-to-tensorrt-engine">
+<h3>UFF File to TensorRT Engine<a class="headerlink" href="#uff-file-to-tensorrt-engine" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="tensorrt.utils.uff_file_to_trt_engine">
+<code class="descclassname">tensorrt.utils.</code><code class="descname">uff_file_to_trt_engine</code><span class="sig-paren">(</span><em>logger</em>, <em>uff_file</em>, <em>parser</em>, <em>max_batch_size</em>, <em>max_workspace_size</em>, <em>datatype=&lt;DataType.FLOAT: 0&gt;</em>, <em>plugin_factory=None</em>, <em>calibrator=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/utils/_utils.html#uff_file_to_trt_engine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.utils.uff_file_to_trt_engine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a UFF file and generates an engine</p>
+<p>Takes a UFF file (created with a UFF exporter) and generates a TensorRT engine that
+can then be saved or executed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logger tensorrt.infer.Logger</strong> (<em>-</em>) – Logging system for the application</li>
+<li><strong>uff_file str</strong> (<em>-</em>) – Path to UFF file</li>
+<li><strong>parser tensorrt.parsers.uffparser.UffParser</strong> (<em>-</em>) – uff parser</li>
+<li><strong>max_batch_size int</strong> (<em>-</em>) – Maximum batch size</li>
+<li><strong>max_workspace_size int</strong> (<em>-</em>) – Maximum workspace size</li>
+<li><strong>datatype tensorrt.infer.DataType</strong> (<em>-</em>) – Operating data type of the engine, can be FP32, FP16 if supported on the platform, or INT8 with calibrator. Default: <code class="docutils literal"><span class="pre">tensorrt.infer.DataType.FLOAT</span></code></li>
+<li><strong>plugins_factory tensorrt.infer.PluginFactory *</strong> (<em>-</em>) – Custom layer factory. Default: `` None``</li>
+<li><strong>calibrator tensorrt.infer.Int8Calibrator *</strong> (<em>-</em>) – Currently unsupported. Default: <code class="docutils literal"><span class="pre">None</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">TensorRT Engine to be used or excuted</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">tensorrt.infer.CudaEngine</span></code></li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="saving-and-loading-models">
+<h2>Saving and Loading Models<a class="headerlink" href="#saving-and-loading-models" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="load-engine-from-file">
+<h3>Load Engine from File<a class="headerlink" href="#load-engine-from-file" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="tensorrt.utils.load_engine">
+<code class="descclassname">tensorrt.utils.</code><code class="descname">load_engine</code><span class="sig-paren">(</span><em>logger</em>, <em>filepath</em>, <em>plugins=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/utils/_utils.html#load_engine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.utils.load_engine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a saved engine file</p>
+<p>Creates an engine from a file containting a serialized engine</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logger tensorrt.infer.Logger</strong> (<em>-</em>) – A logger is needed to monitor the progress of building the engine</li>
+<li><strong>filepath str</strong> (<em>-</em>) – Path to engine file</li>
+<li><strong>plugins tensorrt.infer.PluginFactory *</strong> (<em>-</em>) – Custom layer factory</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">An engine that can be used to execute inference</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">tensorrt.infer.CudaEngine</span></code></li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="save-engine-to-file">
+<h3>Save Engine to File<a class="headerlink" href="#save-engine-to-file" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="tensorrt.utils.write_engine_to_file">
+<code class="descclassname">tensorrt.utils.</code><code class="descname">write_engine_to_file</code><span class="sig-paren">(</span><em>filepath</em>, <em>engine</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/utils/_utils.html#write_engine_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.utils.write_engine_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write an engine to a file</p>
+<p>Takes a serialized engine and wrties it to a file to be loaded
+later</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filepath str</strong> (<em>-</em>) – Path to engine file</li>
+<li><strong>engine tensorrt.infer.CudaEngine</strong> (<em>-</em>) – An engine that can be used to execute inference</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether the file was written or not</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">bool</span></code></li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="load-weights-from-file">
+<h3>Load Weights from File<a class="headerlink" href="#load-weights-from-file" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="tensorrt.utils.load_weights">
+<code class="descclassname">tensorrt.utils.</code><code class="descname">load_weights</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/utils/_utils.html#load_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.utils.load_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load model weights from file</p>
+<p>Loads weights from a .wts file into a dictionary of layer names
+and associated weights encoded in tensorrt.infer.Weights object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filepath str</strong> (<em>-</em>) – path to the weights file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Dictionary of layer names and associated weights</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">dict</span> <span class="pre">{str,</span> <span class="pre">tensorrt.infer.Weights}</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="lite.html" class="btn btn-neutral float-right" title="tensorrt.lite" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="infer.html" class="btn btn-neutral" title="tensorrt.infer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, NVIDIA Corporation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

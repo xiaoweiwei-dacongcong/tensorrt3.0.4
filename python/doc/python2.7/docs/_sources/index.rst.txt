@@ -1,0 +1,77 @@
+.. TensorRT documentation master file, created by
+   sphinx-quickstart on Thu Jun 29 16:42:33 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+TensorRT 3.0 Python API Documentation
+======================================================
+
+TensorRT 3.0.0 includes support for Python, allowing developers to integrate a TensorRT
+inference engine into a python development enviorment or to experiment with TensorRT
+in an accessible fashion.
+
+TensorRT 3.0.0 includes the Universial Framework Format (UFF), a way to convert 
+models trained in Tensorflow and soon other framworks like Caffe2 to a single 
+model format. TensorRT is also now able to generate engines from UFF models. 
+
+Installing TensorRT and the UFF Toolkit
+----------------------------------------
+
+Workflows and Use Cases 
+-------------------------
+There are a couple use cases for which the Python API for TensorRT excels at. 
+
+We have included a couple sample applications with the TensorRT Python package
+which cover many of these use cases. 
+
+1. There is an existing Tensorflow (or other UFF compatable framework) model that a developer wants to try out with TensorRT. 
+   
+   * `Convert Tensorflow to TensorRT <workflows/tf_to_tensorrt.html>`_  
+
+2. There is a Caffe1 model that a developer want to try out with TensorRT
+   
+   * `Convert a Caffe Model to TensorRT <workflows/caffe_to_tensorrt.html>`_
+
+3. A developer wants to deploy a TensorRT engine as a part of a larger application such as a web backend 
+   
+
+4. A developer wants to try out TensorRT with a model trained with a framework not currently supported by UFF and not trained by Caffe1.
+   
+   * `Manually Construct a TensorRT Engine <workflows/manually_construct_tensorrt_engine.html>`_
+
+Included Utilities
+-------------------
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Using the UFF Toolkit:
+
+    uff/uff
+
+.. toctree::
+    :glob:
+    :maxdepth: 1
+    :caption: Workflows
+   
+    workflows/caffe_to_tensorrt.ipynb
+    workflows/tf_to_tensorrt.ipynb
+    workflows/manually_construct_tensorrt_engine.ipynb
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Package Reference
+
+    pkg_ref/infer
+    pkg_ref/utils
+    pkg_ref/lite
+    pkg_ref/parsers
+
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

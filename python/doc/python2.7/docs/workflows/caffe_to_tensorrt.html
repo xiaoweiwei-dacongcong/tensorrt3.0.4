@@ -1,0 +1,798 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Using TensorRT to Optimize Caffe Models in Python &mdash; TensorRT 3.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/tensorrt_theme.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="TensorRT 3.0.2 documentation" href="../index.html"/>
+        <link rel="next" title="Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)" href="tf_to_tensorrt.html"/>
+        <link rel="prev" title="uff" href="../uff/uff.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorRT
+          
+
+          
+            
+            <img src="../_static/nvlogo.svg" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the UFF Toolkit:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../uff/uff.html">uff</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using TensorRT to Optimize Caffe Models in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tf_to_tensorrt.html">Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manually_construct_tensorrt_engine.html">Manually Construct a TensorRT Engine</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/infer.html">tensorrt.infer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/utils.html">tensorrt.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/lite.html">tensorrt.lite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/parsers.html">tensorrt.parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TensorRT</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Using TensorRT to Optimize Caffe Models in Python</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/workflows/caffe_to_tensorrt.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
+div.nboutput,
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput,
+div.nboutput {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput div.prompt pre {
+    color: #303F9F;
+}
+
+/* output prompt */
+div.nboutput div.prompt pre {
+    color: #D84315;
+}
+
+/* all prompts */
+div.nbinput div.prompt,
+div.nboutput div.prompt {
+    min-width: 8ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput div.input_area,
+div.nboutput div.output_area {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput div.input_area {
+    border: 1px solid #cfcfcf;
+    border-radius: 2px;
+    background: #f7f7f7;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.pngmath center alignment in output cells */
+div.nboutput div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
+}
+.admonition.warning .first {
+    background: #f0b37e;
+}
+.admonition.note .first {
+    background: #6ab0de;
+}
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="Using-TensorRT-to-Optimize-Caffe-Models-in-Python">
+<h1>Using TensorRT to Optimize Caffe Models in Python<a class="headerlink" href="#Using-TensorRT-to-Optimize-Caffe-Models-in-Python" title="Permalink to this headline">¶</a></h1>
+<p>TensorRT 3.0.2 includes support for a Python API to load in and optimize
+Caffe models which can then be executed and stored as portable PLAN
+files. The following notebook explains the workflow you can use to do
+so.</p>
+<p>For python the TensorRT library is refered to as <code class="docutils literal"><span class="pre">tensorrt</span></code>, for the
+Early Access you should have been provided a wheel file with the API,
+this can be installed by using <code class="docutils literal"><span class="pre">pip</span></code> (e.g. for python2.7 on ubuntu
+16.04 - <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorrt-3.0.2-cp27-cp27mu-linux_x86_64.whl</span></code>).</p>
+<p>You can import tensorrt as you would import any other package</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tensorrt</span> <span class="kn">as</span> <span class="nn">trt</span>
+</pre></div>
+</div>
+</div>
+<p>There are also some common tools that are used with tensorrt typically.
+We use PyCUDA to handle the CUDA operations needed to allocate memory on
+your GPU and to transfer data to the GPU and results back to the CPU. We
+also use numpy as our primary method to store data</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pycuda.driver</span> <span class="kn">as</span> <span class="nn">cuda</span>
+<span class="kn">import</span> <span class="nn">pycuda.autoinit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+<p>For this example we also want to import an image processing library
+(<code class="docutils literal"><span class="pre">pillow</span></code> in this case) and <code class="docutils literal"><span class="pre">randint</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">imshow</span> <span class="c1">#to show test case</span>
+</pre></div>
+</div>
+</div>
+<p>Since we are converting a Caffe model we also need to use the
+<code class="docutils literal"><span class="pre">caffeparser</span></code> which is located in <code class="docutils literal"><span class="pre">tensorrt.parsers</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">tensorrt</span> <span class="kn">import</span> <span class="n">parsers</span>
+</pre></div>
+</div>
+</div>
+<p>Typically the first thing you will do is create a logger, which is used
+in may places during the model conversion and inference process. We
+provide a simple logger implementation in
+<code class="docutils literal"><span class="pre">tensorrt.infer.ConsoleLogger</span></code> but in the RC you will be able to
+define your own as well.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">G_LOGGER</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">ConsoleLogger</span><span class="p">(</span><span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">LogSeverity</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we will define some constants about our model, which in this example
+we will used to classify digits from the MNIST dataset</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">INPUT_LAYERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+<span class="n">OUTPUT_LAYERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;prob&#39;</span><span class="p">]</span>
+<span class="n">INPUT_H</span> <span class="o">=</span> <span class="mi">28</span>
+<span class="n">INPUT_W</span> <span class="o">=</span>  <span class="mi">28</span>
+<span class="n">OUTPUT_SIZE</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
+<p>We are also going to define some paths, please change these to reflect
+where you placed the data included with the samples</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">MODEL_PROTOTXT</span> <span class="o">=</span> <span class="s1">&#39;./data/mnist/mnist.prototxt&#39;</span>
+<span class="n">CAFFE_MODEL</span> <span class="o">=</span> <span class="s1">&#39;./data/mnist/mnist.caffemodel&#39;</span>
+<span class="n">DATA</span> <span class="o">=</span> <span class="s1">&#39;./data/mnist/&#39;</span>
+<span class="n">IMAGE_MEAN</span> <span class="o">=</span> <span class="s1">&#39;./data/mnist/mnist_mean.binaryproto&#39;</span>
+</pre></div>
+</div>
+</div>
+<p>The first step is to create our engine. The Python API provides some
+nice utilities to make this much simplier. Here we use the caffe model
+converter utility in <code class="docutils literal"><span class="pre">tensorrt.utils</span></code>. We provide it a logger, a path
+to the model prototxt, the model file, the max batch size, the max
+workspace size, the output layer(s) and the data type of the weights.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">engine</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">caffe_to_trt_engine</span><span class="p">(</span><span class="n">G_LOGGER</span><span class="p">,</span>
+                                       <span class="n">MODEL_PROTOTXT</span><span class="p">,</span>
+                                       <span class="n">CAFFE_MODEL</span><span class="p">,</span>
+                                       <span class="mi">1</span><span class="p">,</span>
+                                       <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">20</span><span class="p">,</span>
+                                       <span class="n">OUTPUT_LAYERS</span><span class="p">,</span>
+                                       <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Building Engine
+</pre></div></div>
+</div>
+<p>Now let’s generate a test case for our engine.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">rand_file</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">DATA</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rand_file</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.pgm&#39;</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">im</span><span class="p">))</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Test Case: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rand_file</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Test Case: 9
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/workflows_caffe_to_tensorrt_17_1.png" src="../_images/workflows_caffe_to_tensorrt_17_1.png" />
+</div>
+</div>
+<p>We now need to apply the mean to the input image, we have this stored in
+a .binaryproto file which we use the caffeparser to read</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">parser</span> <span class="o">=</span> <span class="n">parsers</span><span class="o">.</span><span class="n">caffeparser</span><span class="o">.</span><span class="n">create_caffe_parser</span><span class="p">()</span>
+<span class="n">mean_blob</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_binary_proto</span><span class="p">(</span><span class="n">IMAGE_MEAN</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="c1">#NOTE: This is different than the C++ API, you must provide the size of the data</span>
+<span class="n">mean</span> <span class="o">=</span> <span class="n">mean_blob</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">INPUT_W</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">INPUT_W</span> <span class="o">**</span> <span class="mi">2</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">INPUT_W</span> <span class="o">**</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">img</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">-</span> <span class="n">mean</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="n">mean_blob</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we need to create a runtime for Inference and create a context for
+our engine</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">runtime</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">create_infer_runtime</span><span class="p">(</span><span class="n">G_LOGGER</span><span class="p">)</span>
+<span class="n">context</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">create_execution_context</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we can run inference, we are going to start by making sure our data
+is in the correct datatype (FP32 for this model). Then we are going to
+create an empty array on the CPU to hold our results from inference.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="k">assert</span><span class="p">(</span><span class="n">engine</span><span class="o">.</span><span class="n">get_nb_bindings</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+<span class="c1">#convert input data to Float32</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="c1">#create output array to receive data</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">OUTPUT_SIZE</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we are going to allocate memory on the GPU with PyCUDA and register
+them with the engine. The size of the allocations is the size of the
+input and expected output * the batch size</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">d_input</span> <span class="o">=</span> <span class="n">cuda</span><span class="o">.</span><span class="n">mem_alloc</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">img</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+<span class="n">d_output</span> <span class="o">=</span> <span class="n">cuda</span><span class="o">.</span><span class="n">mem_alloc</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">output</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">output</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The engine needs bindings provided as pointers to the GPU memory. PyCUDA
+lets us do this for memory allocations by casting those allocations to
+ints</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">bindings</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">d_input</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">d_output</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<p>We also are going to create a cuda stream to run inference in</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">stream</span> <span class="o">=</span> <span class="n">cuda</span><span class="o">.</span><span class="n">Stream</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we are going to transfer the data to the GPU, run inference and the
+copy the results back.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="c1">#transfer input data to device</span>
+<span class="n">cuda</span><span class="o">.</span><span class="n">memcpy_htod_async</span><span class="p">(</span><span class="n">d_input</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+<span class="c1">#execute model</span>
+<span class="n">context</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">bindings</span><span class="p">,</span> <span class="n">stream</span><span class="o">.</span><span class="n">handle</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+<span class="c1">#transfer predictions back</span>
+<span class="n">cuda</span><span class="o">.</span><span class="n">memcpy_dtoh_async</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">d_output</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+<span class="c1">#syncronize threads</span>
+<span class="n">stream</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we have our results. We can just run ArgMax to get a prediction</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Test Case: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rand_file</span><span class="p">))</span>
+<span class="k">print</span> <span class="p">(</span><span class="s2">&quot;Prediction: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Test Case: 9
+Prediction: 9
+</pre></div></div>
+</div>
+<p>We can also save our engine to a file to use later</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">trt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">write_engine_to_file</span><span class="p">(</span><span class="s2">&quot;./data/mnist/new_mnist.engine&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>Out[18]:
+</pre></div>
+</div>
+<div class="output_area highlight-none"><div class="highlight"><pre>
+<span></span>True
+</pre></div>
+</div>
+</div>
+<p>You can then load this engine later by using
+<code class="docutils literal"><span class="pre">tensorrt.utils.load_engine</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">new_engine</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">load_engine</span><span class="p">(</span><span class="n">G_LOGGER</span><span class="p">,</span> <span class="s2">&quot;./data/mnist/new_mnist.engine&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>And as a final step, we are going to clean up our context, engine and
+runtime</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">context</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="n">engine</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="n">new_engine</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="n">runtime</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tf_to_tensorrt.html" class="btn btn-neutral float-right" title="Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../uff/uff.html" class="btn btn-neutral" title="uff" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, NVIDIA Corporation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

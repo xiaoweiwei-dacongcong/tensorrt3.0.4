@@ -1,0 +1,1003 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Manually Construct a TensorRT Engine &mdash; TensorRT 3.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/tensorrt_theme.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="TensorRT 3.0.2 documentation" href="../index.html"/>
+        <link rel="next" title="tensorrt.infer" href="../pkg_ref/infer.html"/>
+        <link rel="prev" title="Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)" href="tf_to_tensorrt.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorRT
+          
+
+          
+            
+            <img src="../_static/nvlogo.svg" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the UFF Toolkit:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../uff/uff.html">uff</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="caffe_to_tensorrt.html">Using TensorRT to Optimize Caffe Models in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tf_to_tensorrt.html">Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Manually Construct a TensorRT Engine</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Training-a-Model-in-PyTorch">Training a Model in PyTorch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Convert-the-Model-into-a-TensorRT-Engine">Convert the Model into a TensorRT Engine</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/infer.html">tensorrt.infer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/utils.html">tensorrt.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/lite.html">tensorrt.lite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/parsers.html">tensorrt.parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TensorRT</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Manually Construct a TensorRT Engine</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/workflows/manually_construct_tensorrt_engine.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
+div.nboutput,
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput,
+div.nboutput {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput div.prompt pre {
+    color: #303F9F;
+}
+
+/* output prompt */
+div.nboutput div.prompt pre {
+    color: #D84315;
+}
+
+/* all prompts */
+div.nbinput div.prompt,
+div.nboutput div.prompt {
+    min-width: 8ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput div.input_area,
+div.nboutput div.output_area {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput div.input_area {
+    border: 1px solid #cfcfcf;
+    border-radius: 2px;
+    background: #f7f7f7;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.pngmath center alignment in output cells */
+div.nboutput div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
+}
+.admonition.warning .first {
+    background: #f0b37e;
+}
+.admonition.note .first {
+    background: #6ab0de;
+}
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="Manually-Construct-a-TensorRT-Engine">
+<h1>Manually Construct a TensorRT Engine<a class="headerlink" href="#Manually-Construct-a-TensorRT-Engine" title="Permalink to this headline">¶</a></h1>
+<p>With the release of UFF (Universal Framework Format), converting models
+from compatable frameworks to TensorRT engines is much easier. However,
+there maybe frameworks that do not currently have UFF exporters or never
+will. The Python API provides a path forward for Python based frameworks
+with it’s numpy compatable layer weights.</p>
+<p>For this example we are going to be using PyTorch, and show how you can
+train a model then manually convert the model into a TensorRT engine.</p>
+<p>For python the TensorRT library is refered to as <code class="docutils literal"><span class="pre">tensorrt</span></code>, for the
+Early Access you should have been provided a wheel file with the API,
+this can be installed by using <code class="docutils literal"><span class="pre">pip</span></code> (e.g. for python2.7 on Ubuntu
+16.04- <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorrt-3.0.2-cp27-cp27mu-linux_x86_64.whl</span></code>). For
+the Release Canidate forward you can also install the Python API with
+<code class="docutils literal"><span class="pre">apt-get</span></code> (<code class="docutils literal"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">python-tensorrt</span></code>)</p>
+<p>You can import tensorrt as you would import any other package</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tensorrt</span> <span class="kn">as</span> <span class="nn">trt</span>
+</pre></div>
+</div>
+</div>
+<p>There are also some common tools that are used with tensorrt typically.
+We use PyCUDA to handle the CUDA operations needed to allocate memory on
+your GPU and to transfer data to the GPU and results back to the CPU. We
+also use numpy as our primary method to store data</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pycuda.driver</span> <span class="kn">as</span> <span class="nn">cuda</span>
+<span class="kn">import</span> <span class="nn">pycuda.autoinit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">imshow</span> <span class="c1">#to show test case</span>
+</pre></div>
+</div>
+</div>
+<p>We also need to import PyTorch and its various packages</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="kn">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="kn">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="kn">as</span> <span class="nn">optim</span>
+<span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
+<span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="kn">import</span> <span class="n">Variable</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Training-a-Model-in-PyTorch">
+<h2>Training a Model in PyTorch<a class="headerlink" href="#Training-a-Model-in-PyTorch" title="Permalink to this headline">¶</a></h2>
+<p>We are going to move quickly through the PyTorch component of this
+example since it is not the focus. If you want to learn more about
+PyTorch and how to use it, check out <a class="reference external" href="http://pytorch.org/tutorials/">http://pytorch.org/tutorials/</a></p>
+<p>We are going to start out by setting some hyper parameters, then create
+a dataloader, define our network, set our optimizer and define our train
+and test steps</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">TEST_BATCH_SIZE</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">EPOCHS</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="n">SGD_MOMENTUM</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">SEED</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">LOG_INTERVAL</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="c1">#Enable Cuda</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="c1">#Dataloader</span>
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;num_workers&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;pin_memory&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+<span class="n">train_loader</span>  <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="s1">&#39;/tmp/mnist/data&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                    <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+                    <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+                    <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.1307</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.3081</span><span class="p">,))</span>
+        <span class="p">])),</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="n">test_loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+    <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="s1">&#39;/tmp/mnist/data&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                   <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+                   <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+                    <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.1307</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.3081</span><span class="p">,))</span>
+        <span class="p">])),</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">TEST_BATCH_SIZE</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="c1">#Network</span>
+<span class="k">class</span> <span class="nc">Net</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Net</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2_drop</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout2d</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">max_pool2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">max_pool2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Net</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>Out[7]:
+</pre></div>
+</div>
+<div class="output_area highlight-none"><div class="highlight"><pre>
+<span></span>Net (
+  (conv1): Conv2d(1, 20, kernel_size=(5, 5), stride=(1, 1))
+  (conv2): Conv2d(20, 50, kernel_size=(5, 5), stride=(1, 1))
+  (conv2_drop): Dropout2d (p=0.5)
+  (fc1): Linear (800 -&gt; 500)
+  (fc2): Linear (500 -&gt; 10)
+)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">LEARNING_RATE</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="n">SGD_MOMENTUM</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_loader</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">Variable</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="c1">#if batch % LOG_INTERVAL == 0:</span>
+            <span class="c1">#print(&#39;Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}&#39;</span>
+            <span class="c1">#      .format(epoch,</span>
+            <span class="c1">#              batch * len(data),</span>
+            <span class="c1">#              len(train_loader.dataset),</span>
+            <span class="c1">#              100. * batch / len(train_loader),</span>
+            <span class="c1">#              loss.data[0]))</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">test_loss</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">test_loader</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">volatile</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span> <span class="n">Variable</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">test_loss</span> <span class="o">+=</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">correct</span> <span class="o">+=</span> <span class="n">pred</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">test_loss</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)</span><span class="se">\n</span><span class="s1">&#39;</span>
+          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_loss</span><span class="p">,</span>
+                  <span class="n">correct</span><span class="p">,</span>
+                  <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">),</span>
+                  <span class="mf">100.</span> <span class="o">*</span> <span class="n">correct</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)))</span>
+
+
+
+</pre></div>
+</div>
+</div>
+<p>Now we are going to train this model</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">EPOCHS</span><span class="p">):</span>
+    <span class="n">train</span><span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">test</span><span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Test set: Average loss: 0.3985, Accuracy: 8865/10000 (89%)
+
+
+Test set: Average loss: 0.2744, Accuracy: 9173/10000 (92%)
+
+
+Test set: Average loss: 0.2195, Accuracy: 9359/10000 (94%)
+
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Convert-the-Model-into-a-TensorRT-Engine">
+<h2>Convert the Model into a TensorRT Engine<a class="headerlink" href="#Convert-the-Model-into-a-TensorRT-Engine" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have a “trained” model we are going to start converting the
+model by first extract the layer wieghts by getting the <code class="docutils literal"><span class="pre">state_dict</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">weights</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we are going to start converting the model to TensorRT by first
+creating a builder and a logger for the build process</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">G_LOGGER</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">ConsoleLogger</span><span class="p">(</span><span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">LogSeverity</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<span class="n">builder</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">create_infer_builder</span><span class="p">(</span><span class="n">G_LOGGER</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We are now going to create the network by replicating the network
+structure above and extracting the weights in the form of numpy arrays
+from PyTorch. There are more elegant ways of doing this but we have
+expanded it out to show how it works. The numpy arrays from PyTorch
+reflect the dimensionality of the layers, so we reshape to flatten the
+arrays</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">network</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">create_network</span><span class="p">()</span>
+
+<span class="c1">#Name for the input layer, data type, tuple for dimension</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">))</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1">#-------------</span>
+<span class="n">conv1_w</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="s1">&#39;conv1.weight&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">conv1_b</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="s1">&#39;conv1.bias&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">conv1</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">add_convolution</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>  <span class="n">conv1_w</span><span class="p">,</span> <span class="n">conv1_b</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">conv1</span><span class="p">)</span>
+<span class="n">conv1</span><span class="o">.</span><span class="n">set_stride</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">#-------------</span>
+<span class="n">pool1</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">add_pooling</span><span class="p">(</span><span class="n">conv1</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">PoolingType</span><span class="o">.</span><span class="n">MAX</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">pool1</span><span class="p">)</span>
+<span class="n">pool1</span><span class="o">.</span><span class="n">set_stride</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1">#-------------</span>
+<span class="n">conv2_w</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="s1">&#39;conv2.weight&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">conv2_b</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="s1">&#39;conv2.bias&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">conv2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">add_convolution</span><span class="p">(</span><span class="n">pool1</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">50</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="n">conv2_w</span><span class="p">,</span> <span class="n">conv2_b</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">conv2</span><span class="p">)</span>
+<span class="n">conv2</span><span class="o">.</span><span class="n">set_stride</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">#-------------</span>
+<span class="n">pool2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">add_pooling</span><span class="p">(</span><span class="n">conv2</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">PoolingType</span><span class="o">.</span><span class="n">MAX</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">pool2</span><span class="p">)</span>
+<span class="n">pool2</span><span class="o">.</span><span class="n">set_stride</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1">#-------------</span>
+<span class="n">fc1_w</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="s1">&#39;fc1.weight&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fc1_b</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="s1">&#39;fc1.bias&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fc1</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">add_fully_connected</span><span class="p">(</span><span class="n">pool2</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">500</span><span class="p">,</span> <span class="n">fc1_w</span><span class="p">,</span> <span class="n">fc1_b</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">fc1</span><span class="p">)</span>
+
+<span class="c1">#-------------</span>
+<span class="n">relu1</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">add_activation</span><span class="p">(</span><span class="n">fc1</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">ActivationType</span><span class="o">.</span><span class="n">RELU</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">relu1</span><span class="p">)</span>
+
+<span class="c1">#-------------</span>
+<span class="n">fc2_w</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="s1">&#39;fc2.weight&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fc2_b</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="s1">&#39;fc2.bias&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fc2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">add_fully_connected</span><span class="p">(</span><span class="n">relu1</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">10</span><span class="p">,</span> <span class="n">fc2_w</span><span class="p">,</span> <span class="n">fc2_b</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">fc2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we need to mark our output layer</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">fc2</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;prob&quot;</span><span class="p">)</span>
+<span class="n">network</span><span class="o">.</span><span class="n">mark_output</span><span class="p">(</span><span class="n">fc2</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>We now are going to set the rest of the parameters for the network (max
+batch size and max workspace) and build the engine</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">builder</span><span class="o">.</span><span class="n">set_max_batch_size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">builder</span><span class="o">.</span><span class="n">set_max_workspace_size</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">20</span><span class="p">)</span>
+
+<span class="n">engine</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build_cuda_engine</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+<span class="n">network</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="n">builder</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we are going to create the engine runtime and generate a test case
+from the torch dataloader</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">runtime</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">create_infer_runtime</span><span class="p">(</span><span class="n">G_LOGGER</span><span class="p">)</span>
+<span class="n">img</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">test_loader</span><span class="p">))</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">img</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Test Case: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Test Case: 4
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/workflows_manually_construct_tensorrt_engine_27_1.png" src="../_images/workflows_manually_construct_tensorrt_engine_27_1.png" />
+</div>
+</div>
+<p>We are now going to create an execution context for the engine</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">context</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">create_execution_context</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>We are going to now allocate the memory on the GPU and allocate memory
+on the CPU to hold results after inference. The size of the allocations
+is the size of the input and expected output * the batch size.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="c1">#alocate device memory</span>
+<span class="n">d_input</span> <span class="o">=</span> <span class="n">cuda</span><span class="o">.</span><span class="n">mem_alloc</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">img</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+<span class="n">d_output</span> <span class="o">=</span> <span class="n">cuda</span><span class="o">.</span><span class="n">mem_alloc</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">output</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">output</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The engine needs bindings provided as pointers to the GPU memory. PyCUDA
+lets us do this for memory allocations by casting those allocations to
+ints</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">bindings</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">d_input</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">d_output</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<p>We also are going to create a cuda stream to run inference in.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">stream</span> <span class="o">=</span> <span class="n">cuda</span><span class="o">.</span><span class="n">Stream</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we are going to transfer the data to the GPU, run inference and the
+copy the results back.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="c1">#transfer input data to device</span>
+<span class="n">cuda</span><span class="o">.</span><span class="n">memcpy_htod_async</span><span class="p">(</span><span class="n">d_input</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+<span class="c1">#execute model</span>
+<span class="n">context</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">bindings</span><span class="p">,</span> <span class="n">stream</span><span class="o">.</span><span class="n">handle</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+<span class="c1">#transfer predictions back</span>
+<span class="n">cuda</span><span class="o">.</span><span class="n">memcpy_dtoh_async</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">d_output</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+<span class="c1">#syncronize threads</span>
+<span class="n">stream</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we have our results. We can just run ArgMax to get a prediction</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Test Case: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+<span class="k">print</span> <span class="p">(</span><span class="s2">&quot;Prediction: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Test Case: 4
+Prediction: 4
+</pre></div></div>
+</div>
+<p>We can also save our engine to a file to use later</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">trt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">write_engine_to_file</span><span class="p">(</span><span class="s2">&quot;./pyt_mnist.engine&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>Out[23]:
+</pre></div>
+</div>
+<div class="output_area highlight-none"><div class="highlight"><pre>
+<span></span>True
+</pre></div>
+</div>
+</div>
+<p>You can then load this engine later by using
+<code class="docutils literal"><span class="pre">tensorrt.utils.load_engine</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">new_engine</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">load_engine</span><span class="p">(</span><span class="n">G_LOGGER</span><span class="p">,</span> <span class="s2">&quot;./pyt_mnist.engine&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>And as a final step, we are going to clean up our context, engine and
+runtime</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2"><div class="highlight"><pre>
+<span></span><span class="n">context</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="n">engine</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="n">new_engine</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="n">runtime</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../pkg_ref/infer.html" class="btn btn-neutral float-right" title="tensorrt.infer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tf_to_tensorrt.html" class="btn btn-neutral" title="Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, NVIDIA Corporation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

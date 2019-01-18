@@ -1,0 +1,78 @@
+.. TensorRT documentation master file, created by
+   sphinx-quickstart on Thu Jun 29 16:42:33 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+TensorRT 3.0 Python API Quick Start
+===================================================
+
+TensorRT 3.0.0 includes support for Python, allowing developers to integrate a TensorRT
+inference engine into a python development enviorment or to experiment with TensorRT
+in an accessible fashion.
+
+TensorRT 3.0.0 includes the Universial Framework Format (UFF), a way to convert 
+models trained in Tensorflow and soon other framworks like Caffe2 to a single 
+model format. TensorRT is also now able to generate engines from UFF models. 
+
+Installing TensorRT and the UFF Toolkit
+----------------------------------------
+
+For the Early Access, all Python code is distributed though wheel packages (.whl). 
+Wheels are installed with ``pip``, the python package manager. To install the Python API, and/or the UFF toolkit, all that is required is to run:
+
+    - For Python 2.7 TensorRT on **Ubuntu 14.04**: 
+        - ``pip install ##PYTHON27_UBUNUT1404_NAME##``
+
+    - For Python 2.7 TensorRT on **Ubuntu 16.04**: 
+        - ``pip install tensorrt-3.0.0-cp27-cp27mu-linux_x86_64.whl``
+
+    - For Python 3.4 TensorRT: 
+        - ``pip3 install tensorrt-3.0.0-cp34-cp34m-linux_x86_64.whl``
+
+    - For Python 3.5 TensorRT: 
+        - ``pip3 install tensorrt-3.0.0-cp35-cp35m-linux_x86_64.whl``
+
+    - For UFF Toolkit Python 2/3: 
+        - ``pip install ##UFF_NAME##``
+
+In order to use the Python API, please verify you have TensorRT **3.0.0** installed and accessible in your ``LD_LIBRARY_PATH``.
+
+
+TensorRT works with PyCUDA to manage CUDA operations. To install PyCUDA, the recommend path is to follow the instructions here:
+
+   - `Installing PyCUDA <https://wiki.tiker.net/PyCuda/Installation/Linux>`_
+
+
+
+Workflows and Use Cases 
+-------------------------
+
+There are a many use cases for which the Python API for TensorRT makes much easier. 
+
+We have included a couple sample applications with the TensorRT Python package
+which cover many of these use cases. 
+
+1. There is an existing Tensorflow (or other UFF compatable framework) model that a developer wants to try out with TensorRT. 
+	   
+   * :ref:`Convert Tensorflow to TensorRT <tf>`
+
+2. There is a Caffe1 model that a developer want to try out with TensorRT
+   
+   * :ref:`Convert a Caffe Model to TensorRT <c1>`
+
+3. A developer wants to deploy a TensorRT engine as a part of a larger application such as a web backend 
+    
+
+4. A developer wants to try out TensorRT with a model trained with a framework not currently supported by UFF and not trained by Caffe1.
+   
+   * :ref:`Manually Construct a TensorRT Engine <pyt>`
+
+
+.. toctree::
+     :glob:
+     :maxdepth: 1
+     :caption: Workflows
+   
+     workflows/caffe_to_tensorrt.ipynb
+     workflows/tf_to_tensorrt.ipynb
+     workflows/manually_construct_tensorrt_engine.ipynb

@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Getting Started with TensorRT in Python &mdash; TensorRT 3.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/tensorrt_theme.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="TensorRT 3.0.2 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> TensorRT
+          
+
+          
+            
+            <img src="_static/nvlogo.svg" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the UFF Toolkit:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="uff/uff.html">uff</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="workflows/caffe_to_tensorrt.html">Using TensorRT to Optimize Caffe Models in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflows/tf_to_tensorrt.html">Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflows/manually_construct_tensorrt_engine.html">Manually Construct a TensorRT Engine</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pkg_ref/infer.html">tensorrt.infer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pkg_ref/utils.html">tensorrt.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pkg_ref/lite.html">tensorrt.lite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pkg_ref/parsers.html">tensorrt.parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TensorRT</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Getting Started with TensorRT in Python</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/getting_started.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
+}
+.admonition.warning .first {
+    background: #f0b37e;
+}
+.admonition.note .first {
+    background: #6ab0de;
+}
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="getting-started-with-tensorrt-in-python">
+<span id="getting-started-with-tensorrt-in-python"></span><h1>Getting Started with TensorRT in Python<a class="headerlink" href="#getting-started-with-tensorrt-in-python" title="Permalink to this headline">¶</a></h1>
+<p>TensorRT 3.0.2 includes support for Python, allowing developers to integrate a TensorRT
+inference engine into a python development enviorment or to experiment with TensorRT
+in an accessible fashion.</p>
+<p>TensorRT 3.0.2 also includes the Universial Framework Format (UFF), a way to convert
+models trained in Tensorflow and soon other framworks like Caffe2 to a single
+model format. TensorRT is also now able to generate engines from UFF models.</p>
+<div class="section" id="installing-the-tensorrt-python-api-and-the-uff-toolkit">
+<span id="installing-the-tensorrt-python-api-and-the-uff-toolkit"></span><h2>Installing the TensorRT Python API and the UFF Toolkit<a class="headerlink" href="#installing-the-tensorrt-python-api-and-the-uff-toolkit" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="use-cases">
+<span id="use-cases"></span><h2>Use Cases<a class="headerlink" href="#use-cases" title="Permalink to this headline">¶</a></h2>
+<p>There are a couple use cases for which the Python API for TensorRT excels at.</p>
+<p>All of these are relative to the $PYTHON_ROOT directory. This directory is
+dependent on how TensorRT in python was installed.</p>
+<ul class="simple">
+<li>Linux install via pip with --user option: ~/.local/lib/python<version>/site-packages</li>
+<li>Linux install via pip without --user option: /usr/local/lib/python<version>/dist-packages</li>
+<li>Linux install via debian: /usr/lib/python<version>/dist-packages</li>
+</ul>
+<p>We have included a couple sample applications with the TensorRT Python package
+which cover many of these use cases.</p>
+<ol class="simple">
+<li>There is an existing Tensorflow model that a developer wants to try out with
+TensorRT.<ul>
+<li>There is an example located in <code class="docutils literal"><span class="pre">$PYTHON_ROOT/tensorrt/examples/tf_to_trt</span></code>
+which explains how to go from a Tensorflow model through UFF using the UFF toolkit to a TensorRT engine
+and execute inference.</li>
+</ul>
+</li>
+<li>There is a Caffe1 model that a developer want to try out with TensorRT<ul>
+<li>There is an example located in <code class="docutils literal"><span class="pre">$PYTHON_ROOT/tensorrt/examples/caffe_to_trt</span></code>
+which explains how to go from a Caffe model to a TensorRT engine
+and execute inference.</li>
+</ul>
+</li>
+<li>A developer wants to deploy a TensorRT engine as a part of a larger application such as a web backend<ul>
+<li>There is an example located in <code class="docutils literal"><span class="pre">$PYTHON_ROOT/tensorrt/examples/resnet_as_a_service</span></code>
+which explains how to approach creating a TensorRT engine and integrating it into a REST API</li>
+</ul>
+</li>
+<li>A developer wants to try out TensorRT with a model trained with a framework not supported by UFF or not trained by Caffe.<ul>
+<li>There is an example located in <code class="docutils literal"><span class="pre">$PYTHON_ROOT/tensorrt/examples/pytorch_to_trt</span></code>
+which explains how to approach creating a TensorRT engine from a model trained with a numpy compatiable framework</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, NVIDIA Corporation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'3.0.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,1047 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks) &mdash; TensorRT 3.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/tensorrt_theme.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="TensorRT 3.0.2 documentation" href="../index.html"/>
+        <link rel="next" title="Manually Construct a TensorRT Engine" href="manually_construct_tensorrt_engine.html"/>
+        <link rel="prev" title="Using TensorRT to Optimize Caffe Models in Python" href="caffe_to_tensorrt.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorRT
+          
+
+          
+            
+            <img src="../_static/nvlogo.svg" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the UFF Toolkit:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../uff/uff.html">uff</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="caffe_to_tensorrt.html">Using TensorRT to Optimize Caffe Models in Python</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Training-a-Model-in-Tensorflow">Training a Model in Tensorflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Convert-a-Tensorflow-Model-to-UFF">Convert a Tensorflow Model to UFF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Import-a-UFF-Model-into-TensorRT-and-Create-an-Engine">Import a UFF Model into TensorRT and Create an Engine</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="manually_construct_tensorrt_engine.html">Manually Construct a TensorRT Engine</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/infer.html">tensorrt.infer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/utils.html">tensorrt.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/lite.html">tensorrt.lite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pkg_ref/parsers.html">tensorrt.parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TensorRT</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/workflows/tf_to_tensorrt.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
+div.nboutput,
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput,
+div.nboutput {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput div.prompt pre {
+    color: #303F9F;
+}
+
+/* output prompt */
+div.nboutput div.prompt pre {
+    color: #D84315;
+}
+
+/* all prompts */
+div.nbinput div.prompt,
+div.nboutput div.prompt {
+    min-width: 8ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput div.input_area,
+div.nboutput div.output_area {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput div.input_area {
+    border: 1px solid #cfcfcf;
+    border-radius: 2px;
+    background: #f7f7f7;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.pngmath center alignment in output cells */
+div.nboutput div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
+}
+.admonition.warning .first {
+    background: #f0b37e;
+}
+.admonition.note .first {
+    background: #6ab0de;
+}
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="Generate-TensorRT-Engines-from-Tensorflow-(or-other-UFF-Compatable-Frameworks)">
+<h1>Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)<a class="headerlink" href="#Generate-TensorRT-Engines-from-Tensorflow-(or-other-UFF-Compatable-Frameworks)" title="Permalink to this headline">¶</a></h1>
+<p>TensorRT 3.0.2 includes the UFF (Universal Framework Format) parser, a
+way to import UFF models and generate TensorRT engines. The UFF Toolkit
+which was released with TensorRT 3.0 provides support for converting
+Tensorflow models to UFF, there by allowing Tensorflow users to access
+the performace gains of TensorRT. With the Python API you can now go
+from training in Tensorflow to deploying in TensorRT without leaving
+Python.</p>
+<p>For this example, we are going to train a LeNet5 model to classify
+handwritten digits and then generate a TensorRT Engine for inference.</p>
+<p>For python the TensorRT library is refered to as <code class="docutils literal"><span class="pre">tensorrt</span></code>, for the
+Early Access you should have been provided a wheel file with the API,
+this can be installed by using <code class="docutils literal"><span class="pre">pip</span></code> (e.g. for python2.7 -
+<code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorrt-3.0.2-cp27-cp27mu-linux_x86_64.whl</span></code>). For the
+Release Canidate forward you can also install the Python API with
+<code class="docutils literal"><span class="pre">apt-get</span></code> (<code class="docutils literal"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">python-tensorrt</span></code>)</p>
+<p>We need to import Tensorflow and its various packages (note: there is a
+know bug in the EA where Tensorflow needs to be imported before
+TensorRT, this will addressed in the RC)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.examples.tutorials.mnist</span> <span class="k">import</span> <span class="n">input_data</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ImportError</span>                               Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-1-cd5f8e00c032&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span><span class="ansi-green-fg">import</span> tensorflow <span class="ansi-green-fg">as</span> tf
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span class="ansi-green-fg">from</span> tensorflow<span class="ansi-blue-fg">.</span>examples<span class="ansi-blue-fg">.</span>tutorials<span class="ansi-blue-fg">.</span>mnist <span class="ansi-green-fg">import</span> input_data
+
+<span class="ansi-red-fg">ImportError</span>: No module named &#39;tensorflow&#39;
+</pre></div></div>
+</div>
+<p>We can import TensorRT and its parsers like so:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tensorrt</span> <span class="k">as</span> <span class="nn">trt</span>
+<span class="kn">from</span> <span class="nn">tensorrt.parsers</span> <span class="k">import</span> <span class="n">uffparser</span>
+</pre></div>
+</div>
+</div>
+<p>There are also some common tools that are used with tensorrt typically.
+We use PyCUDA to handle the CUDA operations needed to allocate memory on
+your GPU and to transfer data to the GPU and results back to the CPU. We
+also use numpy as our primary method to store data</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pycuda.driver</span> <span class="k">as</span> <span class="nn">cuda</span>
+<span class="kn">import</span> <span class="nn">pycuda.autoinit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">randint</span> <span class="c1"># generate a random test case</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="k">import</span> <span class="n">imshow</span> <span class="c1">#to show test case</span>
+<span class="kn">import</span> <span class="nn">time</span> <span class="c1">#import system tools</span>
+<span class="kn">import</span> <span class="nn">os</span>
+</pre></div>
+</div>
+</div>
+<p>Finally we need to import the UFF toolkit to convert the graph from a
+serialized frozen tensorflow model to UFF</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">uff</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Training-a-Model-in-Tensorflow">
+<h2>Training a Model in Tensorflow<a class="headerlink" href="#Training-a-Model-in-Tensorflow" title="Permalink to this headline">¶</a></h2>
+<p>We are going to move quickly through the Tensorflow component ofthis
+example since its not the focus. If you want to learn more about
+Tensorflow and how to use it, checkout
+<a class="reference external" href="https://www.tensorflow.org/get_started/get_started">https://www.tensorflow.org/get_started/get_started</a></p>
+<p>We are going to start by defining some hyper parameters, then defining
+some helper functions to make the code a bit less verbose. We will then
+define a network, then define our loss metrics, training and test steps
+our input nodes, and a data loader.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">STARTER_LEARNING_RATE</span> <span class="o">=</span> <span class="mf">1e-4</span>
+<span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">NUM_CLASSES</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">MAX_STEPS</span> <span class="o">=</span> <span class="mi">3000</span>
+<span class="n">IMAGE_SIZE</span> <span class="o">=</span> <span class="mi">28</span>
+<span class="n">IMAGE_PIXELS</span> <span class="o">=</span> <span class="n">IMAGE_SIZE</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">OUTPUT_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fc2/Relu&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p><em>Notice that we are padding our Conv2d layer. TensorRT expects symetric
+padding for layers</em></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">WeightsVariable</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;weights&#39;</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">BiasVariable</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;biases&#39;</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">Conv2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="c1"># Conv2D wrapper, with bias and relu activation</span>
+    <span class="n">filter_size</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_shape</span><span class="p">()</span><span class="o">.</span><span class="n">as_list</span><span class="p">()</span>
+    <span class="n">pad_size</span> <span class="o">=</span> <span class="n">filter_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span>
+    <span class="n">pad_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="n">pad_size</span><span class="p">,</span><span class="n">pad_size</span><span class="p">],[</span><span class="n">pad_size</span><span class="p">,</span><span class="n">pad_size</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pad_mat</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;VALID&#39;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">bias_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">MaxPool2x2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="c1"># MaxPool2D wrapper</span>
+    <span class="n">pad_size</span> <span class="o">=</span> <span class="n">k</span><span class="o">//</span><span class="mi">2</span>
+    <span class="n">pad_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="n">pad_size</span><span class="p">,</span><span class="n">pad_size</span><span class="p">],[</span><span class="n">pad_size</span><span class="p">,</span><span class="n">pad_size</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">max_pool</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;VALID&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">network</span><span class="p">(</span><span class="n">images</span><span class="p">):</span>
+    <span class="c1"># Convolution 1</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;conv1&#39;</span><span class="p">):</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">WeightsVariable</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">32</span><span class="p">])</span>
+        <span class="n">biases</span> <span class="o">=</span> <span class="n">BiasVariable</span><span class="p">([</span><span class="mi">32</span><span class="p">])</span>
+        <span class="n">conv1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">biases</span><span class="p">))</span>
+        <span class="n">pool1</span> <span class="o">=</span> <span class="n">MaxPool2x2</span><span class="p">(</span><span class="n">conv1</span><span class="p">)</span>
+
+    <span class="c1"># Convolution 2</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;conv2&#39;</span><span class="p">):</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">WeightsVariable</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">64</span><span class="p">])</span>
+        <span class="n">biases</span> <span class="o">=</span> <span class="n">BiasVariable</span><span class="p">([</span><span class="mi">64</span><span class="p">])</span>
+        <span class="n">conv2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">pool1</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">biases</span><span class="p">))</span>
+        <span class="n">pool2</span> <span class="o">=</span> <span class="n">MaxPool2x2</span><span class="p">(</span><span class="n">conv2</span><span class="p">)</span>
+        <span class="n">pool2_flat</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">pool2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">64</span><span class="p">])</span>
+
+    <span class="c1"># Fully Connected 1</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;fc1&#39;</span><span class="p">):</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">WeightsVariable</span><span class="p">([</span><span class="mi">7</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">1024</span><span class="p">])</span>
+        <span class="n">biases</span> <span class="o">=</span> <span class="n">BiasVariable</span><span class="p">([</span><span class="mi">1024</span><span class="p">])</span>
+        <span class="n">fc1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">pool2_flat</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span> <span class="o">+</span> <span class="n">biases</span><span class="p">)</span>
+
+    <span class="c1"># Fully Connected 2</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;fc2&#39;</span><span class="p">):</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">WeightsVariable</span><span class="p">([</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+        <span class="n">biases</span> <span class="o">=</span> <span class="n">BiasVariable</span><span class="p">([</span><span class="mi">10</span><span class="p">])</span>
+        <span class="n">fc2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">fc1</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span> <span class="o">+</span> <span class="n">biases</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fc2</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">loss_metrics</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+    <span class="n">cross_entropy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sparse_softmax_cross_entropy_with_logits</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+                                                                   <span class="n">logits</span><span class="o">=</span><span class="n">logits</span><span class="p">,</span>
+                                                                   <span class="n">name</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">cross_entropy</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;softmax_mean&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">training</span><span class="p">(</span><span class="n">loss</span><span class="p">):</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>
+    <span class="n">global_step</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;global_step&#39;</span><span class="p">,</span> <span class="n">trainable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">learning_rate</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">exponential_decay</span><span class="p">(</span><span class="n">STARTER_LEARNING_RATE</span><span class="p">,</span>
+                                               <span class="n">global_step</span><span class="p">,</span>
+                                               <span class="mi">100000</span><span class="p">,</span>
+                                               <span class="mf">0.75</span><span class="p">,</span>
+                                               <span class="n">staircase</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">)</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">MomentumOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+    <span class="n">train_op</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">global_step</span><span class="o">=</span><span class="n">global_step</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">train_op</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">evaluation</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+    <span class="n">correct</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">in_top_k</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">correct</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">do_eval</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span>
+            <span class="n">eval_correct</span><span class="p">,</span>
+            <span class="n">images_placeholder</span><span class="p">,</span>
+            <span class="n">labels_placeholder</span><span class="p">,</span>
+            <span class="n">data_set</span><span class="p">,</span>
+            <span class="n">summary</span><span class="p">):</span>
+
+    <span class="n">true_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">steps_per_epoch</span> <span class="o">=</span> <span class="n">data_set</span><span class="o">.</span><span class="n">num_examples</span> <span class="o">//</span> <span class="n">BATCH_SIZE</span>
+    <span class="n">num_examples</span> <span class="o">=</span> <span class="n">steps_per_epoch</span> <span class="o">*</span> <span class="n">BATCH_SIZE</span>
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps_per_epoch</span><span class="p">):</span>
+        <span class="n">feed_dict</span> <span class="o">=</span> <span class="n">fill_feed_dict</span><span class="p">(</span><span class="n">data_set</span><span class="p">,</span>
+                                   <span class="n">images_placeholder</span><span class="p">,</span>
+                                   <span class="n">labels_placeholder</span><span class="p">)</span>
+        <span class="n">log</span><span class="p">,</span> <span class="n">correctness</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">summary</span><span class="p">,</span> <span class="n">eval_correct</span><span class="p">],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span><span class="p">)</span>
+        <span class="n">true_count</span> <span class="o">+=</span> <span class="n">correctness</span>
+    <span class="n">precision</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">true_count</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_examples</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">precision</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Num examples </span><span class="si">%d</span><span class="s1">, Num Correct: </span><span class="si">%d</span><span class="s1"> Precision @ 1: </span><span class="si">%0.04f</span><span class="s1">&#39;</span> <span class="o">%</span>
+          <span class="p">(</span><span class="n">num_examples</span><span class="p">,</span> <span class="n">true_count</span><span class="p">,</span> <span class="n">precision</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">log</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">placeholder_inputs</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+    <span class="n">images_placeholder</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">labels_placeholder</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">images_placeholder</span><span class="p">,</span> <span class="n">labels_placeholder</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">fill_feed_dict</span><span class="p">(</span><span class="n">data_set</span><span class="p">,</span> <span class="n">images_pl</span><span class="p">,</span> <span class="n">labels_pl</span><span class="p">):</span>
+    <span class="n">images_feed</span><span class="p">,</span> <span class="n">labels_feed</span> <span class="o">=</span> <span class="n">data_set</span><span class="o">.</span><span class="n">next_batch</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">)</span>
+    <span class="n">feed_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">images_pl</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">images_feed</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span>
+        <span class="n">labels_pl</span><span class="p">:</span> <span class="n">labels_feed</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">feed_dict</span>
+
+</pre></div>
+</div>
+</div>
+<p>We are going to define our training pipeline in function that will
+return a frozen model with the training nodes removed</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">run_training</span><span class="p">(</span><span class="n">data_sets</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">as_default</span><span class="p">():</span>
+        <span class="n">images_placeholder</span><span class="p">,</span> <span class="n">labels_placeholder</span> <span class="o">=</span> <span class="n">placeholder_inputs</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">network</span><span class="p">(</span><span class="n">images_placeholder</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_metrics</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels_placeholder</span><span class="p">)</span>
+        <span class="n">train_op</span> <span class="o">=</span> <span class="n">training</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+        <span class="n">eval_correct</span> <span class="o">=</span> <span class="n">evaluation</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels_placeholder</span><span class="p">)</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">merge_all</span><span class="p">()</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+        <span class="n">saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+        <span class="n">gpu_options</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">GPUOptions</span><span class="p">(</span><span class="n">per_process_gpu_memory_fraction</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">ConfigProto</span><span class="p">(</span><span class="n">gpu_options</span><span class="o">=</span><span class="n">gpu_options</span><span class="p">))</span>
+        <span class="n">summary_writer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">FileWriter</span><span class="p">(</span><span class="s2">&quot;/tmp/tensorflow/mnist/log&quot;</span><span class="p">,</span>
+                                               <span class="n">graph</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">get_default_graph</span><span class="p">())</span>
+        <span class="n">test_writer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">FileWriter</span><span class="p">(</span><span class="s2">&quot;/tmp/tensorflow/mnist/log/validation&quot;</span><span class="p">,</span>
+                                            <span class="n">graph</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">get_default_graph</span><span class="p">())</span>
+        <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_STEPS</span><span class="p">):</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">feed_dict</span> <span class="o">=</span> <span class="n">fill_feed_dict</span><span class="p">(</span><span class="n">data_sets</span><span class="o">.</span><span class="n">train</span><span class="p">,</span>
+                                       <span class="n">images_placeholder</span><span class="p">,</span>
+                                       <span class="n">labels_placeholder</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">loss_value</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">train_op</span><span class="p">,</span> <span class="n">loss</span><span class="p">],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span><span class="p">)</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Step </span><span class="si">%d</span><span class="s1">: loss = </span><span class="si">%.2f</span><span class="s1"> (</span><span class="si">%.3f</span><span class="s1"> sec)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">loss_value</span><span class="p">,</span> <span class="n">duration</span><span class="p">))</span>
+                <span class="n">summary_str</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span><span class="p">)</span>
+                <span class="n">summary_writer</span><span class="o">.</span><span class="n">add_summary</span><span class="p">(</span><span class="n">summary_str</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+                <span class="n">summary_writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">MAX_STEPS</span><span class="p">:</span>
+                <span class="n">checkpoint_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;/tmp/tensorflow/mnist/log&quot;</span><span class="p">,</span> <span class="s2">&quot;model.ckpt&quot;</span><span class="p">)</span>
+                <span class="n">saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">checkpoint_file</span><span class="p">,</span> <span class="n">global_step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Validation Data Eval:&#39;</span><span class="p">)</span>
+                <span class="n">log</span> <span class="o">=</span> <span class="n">do_eval</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span>
+                              <span class="n">eval_correct</span><span class="p">,</span>
+                              <span class="n">images_placeholder</span><span class="p">,</span>
+                              <span class="n">labels_placeholder</span><span class="p">,</span>
+                              <span class="n">data_sets</span><span class="o">.</span><span class="n">validation</span><span class="p">,</span>
+                              <span class="n">summary</span><span class="p">)</span>
+                <span class="n">test_writer</span><span class="o">.</span><span class="n">add_summary</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="c1">#return sess</span>
+
+        <span class="n">graphdef</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_default_graph</span><span class="p">()</span><span class="o">.</span><span class="n">as_graph_def</span><span class="p">()</span>
+        <span class="n">frozen_graph</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">graph_util</span><span class="o">.</span><span class="n">convert_variables_to_constants</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span>
+                                                                    <span class="n">graphdef</span><span class="p">,</span>
+                                                                    <span class="n">OUTPUT_NAMES</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">graph_util</span><span class="o">.</span><span class="n">remove_training_nodes</span><span class="p">(</span><span class="n">frozen_graph</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+<p>Now we are going to load the Tensorflow MNIST data loader and run
+training, the model does have summaries included so you can take at look
+at the training in tensorboard.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">MNIST_DATASETS</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">read_data_sets</span><span class="p">(</span><span class="s1">&#39;/tmp/tensorflow/mnist/input_data&#39;</span><span class="p">)</span>
+<span class="n">tf_model</span> <span class="o">=</span> <span class="n">run_training</span><span class="p">(</span><span class="n">MNIST_DATASETS</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Convert-a-Tensorflow-Model-to-UFF">
+<h2>Convert a Tensorflow Model to UFF<a class="headerlink" href="#Convert-a-Tensorflow-Model-to-UFF" title="Permalink to this headline">¶</a></h2>
+<p>We are now going to convert it into a serialized UFF model. To convert a
+model we need to at least provide the model stream and the name(s) of
+the desired output node(s). The UFF Toolkit also includes a
+<code class="docutils literal"><span class="pre">uff.from_tensorflow_frozen_model</span></code> function which takes a path to a
+frozen Tensorflow graph protobuf file. Both utilities have options for:
+- <code class="docutils literal"><span class="pre">quiet</span></code> mode to suppress conversion logging - <code class="docutils literal"><span class="pre">input_nodes</span></code> to
+allow you to define a set of input nodes in the graph (the defaults are
+Placeholders nodes) - <code class="docutils literal"><span class="pre">text</span></code> will let you save a human readable
+version of UFF model aloneside the binary UFF - <code class="docutils literal"><span class="pre">list_nodes</span></code> will list
+the nodes in the graph - <code class="docutils literal"><span class="pre">output_filename</span></code> will if provided write the
+model out to the filepath specified instead of returning a serialized
+model</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">uff_model</span> <span class="o">=</span> <span class="n">uff</span><span class="o">.</span><span class="n">from_tensorflow</span><span class="p">(</span><span class="n">tf_model</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;fc2/Relu&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Import-a-UFF-Model-into-TensorRT-and-Create-an-Engine">
+<h2>Import a UFF Model into TensorRT and Create an Engine<a class="headerlink" href="#Import-a-UFF-Model-into-TensorRT-and-Create-an-Engine" title="Permalink to this headline">¶</a></h2>
+<p>We now have a UFF modelsteam we can generate a TensorRT engine with. We
+are going to start by creating a logger for TensorRT.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">G_LOGGER</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">ConsoleLogger</span><span class="p">(</span><span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">LogSeverity</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Next we are going to create a uff parser and identifying the desired
+input and output nodes</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">parser</span> <span class="o">=</span> <span class="n">uffparser</span><span class="o">.</span><span class="n">create_uff_parser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">register_input</span><span class="p">(</span><span class="s2">&quot;Placeholder&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">register_output</span><span class="p">(</span><span class="s2">&quot;fc2/Relu&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we are going to pass the logger, parser and the uff model stream and
+some settings (max batch size and max workspace size) to a utility
+function that will create the engine for us</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">engine</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">uff_to_trt_engine</span><span class="p">(</span><span class="n">G_LOGGER</span><span class="p">,</span> <span class="n">uff_model</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we need to allocate some memory on the CPU to use while we have an
+active engine</p>
+<p>We can now get rid of the parser</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">parser</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we are going to get a test case from the Tensorflow dataloader
+(converting it to FP32)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">img</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">MNIST_DATASETS</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">next_batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1">#convert input data to Float32</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>We are now going to create a runtime and an execution context for the
+engine</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">runtime</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">create_infer_runtime</span><span class="p">(</span><span class="n">G_LOGGER</span><span class="p">)</span>
+<span class="n">context</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">create_execution_context</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>We are going to now allocate the memory on the GPU and allocate memory
+on the CPU to hold results after inference. The size of the allocations
+is the size of the input and expected output * the batch size.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="c1">#alocate device memory</span>
+<span class="n">d_input</span> <span class="o">=</span> <span class="n">cuda</span><span class="o">.</span><span class="n">mem_alloc</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">img</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+<span class="n">d_output</span> <span class="o">=</span> <span class="n">cuda</span><span class="o">.</span><span class="n">mem_alloc</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">output</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">output</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The engine needs bindings provided as pointers to the GPU memory. PyCUDA
+lets us do this for memory allocations by casting those allocations to
+ints</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">bindings</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">d_input</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">d_output</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<p>We also are going to create a cuda stream to run inference in.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">stream</span> <span class="o">=</span> <span class="n">cuda</span><span class="o">.</span><span class="n">Stream</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we are going to transfer the data to the GPU, run inference and the
+copy the results back.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="c1">#transfer input data to device</span>
+<span class="n">cuda</span><span class="o">.</span><span class="n">memcpy_htod_async</span><span class="p">(</span><span class="n">d_input</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+<span class="c1">#execute model</span>
+<span class="n">context</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">bindings</span><span class="p">,</span> <span class="n">stream</span><span class="o">.</span><span class="n">handle</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="c1">#transfer predictions back</span>
+<span class="n">cuda</span><span class="o">.</span><span class="n">memcpy_dtoh_async</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">d_output</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+<span class="c1">#syncronize threads</span>
+<span class="n">stream</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Now we have our results. We can just run ArgMax to get a prediction</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Case: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Prediction: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<p>We can also save our engine to a file to use later</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">trt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">write_engine_to_file</span><span class="p">(</span><span class="s2">&quot;./tf_mnist.engine&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<p>You can then load this engine later by using
+<code class="docutils literal"><span class="pre">tensorrt.utils.load_engine</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">new_engine</span> <span class="o">=</span> <span class="n">trt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">load_engine</span><span class="p">(</span><span class="n">G_LOGGER</span><span class="p">,</span> <span class="s2">&quot;./tf_mnist.engine&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>And as a final step, we are going to clean up our context, engine and
+runtime</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">context</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="n">engine</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="n">new_engine</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+<span class="n">runtime</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="manually_construct_tensorrt_engine.html" class="btn btn-neutral float-right" title="Manually Construct a TensorRT Engine" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="caffe_to_tensorrt.html" class="btn btn-neutral" title="Using TensorRT to Optimize Caffe Models in Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, NVIDIA Corporation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

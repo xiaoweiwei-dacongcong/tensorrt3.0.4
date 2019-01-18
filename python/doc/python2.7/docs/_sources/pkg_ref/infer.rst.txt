@@ -1,0 +1,344 @@
+tensorrt.infer
+================
+
+The :mod:`infer` package contains an interface for libnvinfer. This module is used for graph definition,
+engine building and inference execution.
+
+.. automodule:: tensorrt.infer
+.. currentmodule:: tensorrt.infer
+
+Foundational Types
+-----------------------------
+
+DataType
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: DataType
+    :members:
+
+Weights
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: Weights
+    :members:
+
+Dims
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: Dims
+    :members:
+
+DimsHW
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: DimsHW
+    :members:
+
+DimsCHW
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: DimsCHW
+    :members:
+
+DimsNCHW
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: DimsNCHW
+    :members:
+
+DimensionType
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: DimensionType
+    :members:
+
+
+
+
+Engine and Inference
+------------------------
+
+Builder
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: Builder
+    :members:
+
+create_infer_builder
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: create_infer_builder
+
+
+CudaEngine
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: CudaEngine
+    :members:
+
+ExecutionContext
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ExecutionContext
+    :members:
+
+Runtime
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: Runtime
+    :members:
+
+create_infer_runtime
+~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: create_infer_runtime
+
+HostMemory
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: HostMemory
+    :members:
+
+Graph Definition
+-----------------------------
+
+NetworkDefinition
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: NetworkDefinition
+    :members:
+
+LayerType
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: LayerType
+    :members:
+
+Tensor
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Tensor
+    :members:
+
+Layer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Layer
+    :members:
+
+ConvolutionLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ConvolutionLayer
+    :members:
+
+FullyConnectedLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: FullyConnectedLayer
+    :members:
+
+ActivationLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ActivationLayer
+    :members:
+
+ActivationType
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ActivationType
+    :members:
+
+PoolingLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: PoolingLayer
+    :members:
+
+PoolingType
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: PoolingType
+    :members:
+
+LRNLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: LRNLayer
+    :members:
+
+ScaleLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ScaleLayer
+    :members:
+
+ScaleMode
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ScaleMode
+    :members:
+
+SoftmaxLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: SoftmaxLayer
+    :members:
+
+ConcatenationLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ConcatenationLayer
+    :members:
+
+DeconvolutionLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: DeconvolutionLayer
+    :members:
+
+ElementWiseLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ElementWiseLayer
+    :members:
+
+ElementWiseOperation
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ElementWiseOperation
+    :members:
+
+ShuffleLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ShuffleLayer
+    :members:
+
+Permutation
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Permutation
+    :members:
+
+UnaryLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: UnaryLayer
+    :members:
+
+UnaryOperation
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: UnaryOperation
+    :members:
+
+PluginLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: PluginLayer
+    :members:
+
+PaddingLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: PaddingLayer
+    :members:
+
+RNNLayer
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RNNLayer
+    :members:
+
+RNNOperation
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RNNOperation
+    :members:
+
+RNNDirection
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RNNDirection
+    :members:
+
+RNNInputMode
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RNNInputMode
+    :members:
+
+IOutputDimensionsFormula
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: IOutputDimensionsFormula
+    :members:
+
+
+
+Int8 Calibration
+---------------------
+
+Int8Calibrator
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Int8Calibrator
+    :members:
+
+Int8EntropyCalibrator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Int8EntropyCalibrator
+    :members:
+
+Int8LegacyCalibrator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Int8LegacyCalibrator
+    :members:
+
+CalibrationAlgoType
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: CalibrationAlgoType
+    :members:
+
+
+
+Logger
+-------------------
+
+Logger
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Logger
+    :members:
+
+ConsoleLogger
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ConsoleLogger
+    :members:
+
+LogSeverity
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: LogSeverity
+    :members:
+
+
+
+Profiler
+-------------------
+
+Profiler
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Profiler
+    :members:
+
+ConsoleProfiler
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ConsoleProfiler
+    :members:

@@ -1,0 +1,57 @@
+tensorrt.parsers
+================
+
+The :mod:`parsers` package parsers for both Caffe and Universal Framework Format (UFF)
+
+.. automodule:: tensorrt.parsers
+.. currentmodule:: tensorrt.parsers
+
+Caffe Parser
+-----------------
+.. automodule:: tensorrt.parsers.caffeparser
+.. currentmodule:: tensorrt.parsers.caffeparser
+
+CaffeParser
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: CaffeParser
+    :members:
+
+BlobNameToTensor
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: BlobNameToTensor
+    :members:
+
+BinaryProtoBlob
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: BinaryProtoBlob
+    :members:
+
+PluginFactory
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: PluginFactory
+    :members:
+
+UFF Parser
+----------------------------
+.. automodule:: tensorrt.parsers.uffparser
+.. currentmodule:: tensorrt.parsers.uffparser
+
+UffParser
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: UffParser
+    :members:
+
+create_uff_parser
+~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: create_uff_parser
+
+shutdown_protobuf_library
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: shutdown_protobuf_library

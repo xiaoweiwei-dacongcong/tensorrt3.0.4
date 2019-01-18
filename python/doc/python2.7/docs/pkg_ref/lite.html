@@ -1,0 +1,716 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tensorrt.lite &mdash; TensorRT 3.0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/tensorrt_theme.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="TensorRT 3.0.2 documentation" href="../index.html"/>
+        <link rel="next" title="tensorrt.parsers" href="parsers.html"/>
+        <link rel="prev" title="tensorrt.utils" href="utils.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorRT
+          
+
+          
+            
+            <img src="../_static/nvlogo.svg" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Using the UFF Toolkit:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../uff/uff.html">uff</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../workflows/caffe_to_tensorrt.html">Using TensorRT to Optimize Caffe Models in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows/tf_to_tensorrt.html">Generate TensorRT Engines from Tensorflow (or other UFF Compatable Frameworks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflows/manually_construct_tensorrt_engine.html">Manually Construct a TensorRT Engine</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="infer.html">tensorrt.infer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">tensorrt.utils</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">tensorrt.lite</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#engine">Engine</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parsers.html">tensorrt.parsers</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TensorRT</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>tensorrt.lite</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/pkg_ref/lite.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
+}
+.admonition.warning .first {
+    background: #f0b37e;
+}
+.admonition.note .first {
+    background: #6ab0de;
+}
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+</style>
+<div class="section" id="tensorrt-lite">
+<h1>tensorrt.lite<a class="headerlink" href="#tensorrt-lite" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">lite</span></code> package contains a</p>
+<span class="target" id="module-tensorrt.lite"></span><p>Default engine implementation</p>
+<div class="section" id="engine">
+<h2>Engine<a class="headerlink" href="#engine" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorrt.lite.Engine">
+<em class="property">class </em><code class="descclassname">tensorrt.lite.</code><code class="descname">Engine</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine" title="Permalink to this definition">¶</a></dt>
+<dd><p>A TensorRT engine with self containted logger, runtime, context and memory</p>
+<dl class="docutils">
+<dt>Members:</dt>
+<dd><ul class="first last simple">
+<li><strong>logger</strong> <code class="docutils literal"><span class="pre">tensorrt.infer.Logger</span></code>: Engine Logger</li>
+<li><strong>log_sev</strong> <code class="docutils literal"><span class="pre">tensorrt.infer.LogSeverity</span></code>: Verboseness of the logger</li>
+<li><strong>max_batch_size</strong> <code class="docutils literal"><span class="pre">int</span></code>: Maximum supported batch size</li>
+<li><strong>max_workspace_size</strong> <code class="docutils literal"><span class="pre">int</span></code>: Maximum workspace size</li>
+<li><strong>data_type</strong> <code class="docutils literal"><span class="pre">tensorrt.infer.DataType</span></code>: Operating data type of the engine</li>
+<li><strong>src_framework</strong> <code class="docutils literal"><span class="pre">str</span></code>: Parser used to create engine</li>
+<li><strong>runtime</strong> <code class="docutils literal"><span class="pre">tensorrt.infer.Runtime</span></code>: Engine runtime</li>
+<li><strong>engine</strong> <code class="docutils literal"><span class="pre">tensorrt.infer.CudaEngine</span></code>: TensorRT Engine</li>
+<li><strong>context</strong> <code class="docutils literal"><span class="pre">tensorrt.infer.ExecutionContext</span></code>: Engine execution context</li>
+<li><strong>profiler</strong> <code class="docutils literal"><span class="pre">tensorrt.infer.Profiler</span></code>: Engine profiler</li>
+<li><strong>input_dim</strong> <code class="docutils literal"><span class="pre">[tensorrt.infer.DimsCHW]</span></code>: Input layer dimensions</li>
+<li><strong>output_dim</strong> <code class="docutils literal"><span class="pre">[tensorrt.infer.DimsCHW]</span></code>: Output layer dimensions</li>
+<li><strong>input_names</strong> <code class="docutils literal"><span class="pre">[str]</span></code>: Input layer names</li>
+<li><strong>output_names</strong> <code class="docutils literal"><span class="pre">[str]</span></code>: Output layer names</li>
+<li><strong>d_input</strong> <code class="docutils literal"><span class="pre">[pycuda.DeviceAllocation]</span></code>: GPU Buffer allocations</li>
+<li><strong>d_output</strong> <code class="docutils literal"><span class="pre">[pycuda.DeviceAllocation]</span></code>: GPU Buffer allocations</li>
+<li><strong>preprocessors</strong> <code class="docutils literal"><span class="pre">{str:function}</span></code>: Dictionary of input layer names and preprocessing functions (or None)</li>
+<li><strong>postprocessors</strong> <code class="docutils literal"><span class="pre">{str:function}</span></code>: Dictionary of output layer names and postprocessing functions (or None)</li>
+<li><strong>bindings</strong> <code class="docutils literal"><span class="pre">[int]</span></code>: Buffer Pointers</li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt>
+<code class="descname">- __init__(self, **kwargs)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- __del__(self)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- _create_engine(self, **kwargs)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- infer(self, *input_data)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- save(self, str)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- supported_data_format(self, *input_data)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- uniform_data_format(self, *input_data)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- convert_LCHW_to_LNCHW(self, input_data)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- transform_to_LNCHW(self, *input_data)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- verify_data_type(self, *input_data)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- format_data(self, output_data)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- apply_postprocessing(self, layer_data, layer_postprocessor)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- log_info(self, msg)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- log_error(self, msg)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">- log_warn(self, msg)</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.apply_postprocessing">
+<code class="descname">apply_postprocessing</code><span class="sig-paren">(</span><em>layer_data</em>, <em>layer_postprocessor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.apply_postprocessing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.apply_postprocessing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the user specified postprocessing function to results</p>
+<p>Takes outputs for a layer and the layer’s specified postprocessor
+function and processes each result (3D numpy array). Stores the
+result in the place of the 3D Numpy array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>layer_data list/numpy.ndarray</strong> (<em>-</em>) – Formated results for a layer</li>
+<li><strong>layer_postprocessor function</strong> (<em>-</em>) – Layer’s post processing function</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Results:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">list/numpy.ndarray</span></code>: Post processed results</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.convert_LCHW_to_LNCHW">
+<code class="descname">convert_LCHW_to_LNCHW</code><span class="sig-paren">(</span><em>input_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.convert_LCHW_to_LNCHW"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.convert_LCHW_to_LNCHW" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts data from LCHW format to LNCHW</p>
+<p>Helper for transform_to_LNCHW to convert LCHW format to LNCHW</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_data list List of lists of LCHW data</strong> (<em>-</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">list</span></code> List of list of LNCHW data</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.format_data">
+<code class="descname">format_data</code><span class="sig-paren">(</span><em>output_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.format_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.format_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format results to same shape as input data</p>
+<p>Format the results from inference from the operating data format (LNCHW) to the same data format that input data was given in.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>output_data</strong><strong> [</strong><strong>LNCHW data</strong><strong>]</strong> (<em>-</em>) – List of inference results in LNCHW</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of results for each layer in the same format as the input data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">list</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.infer">
+<code class="descname">infer</code><span class="sig-paren">(</span><em>*input_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.infer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.infer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run inference on a set of data</p>
+<p>Runs inference on a set of data provided by the user.
+Data must be provided in a supportted data format:</p>
+<blockquote>
+<div><ul class="simple">
+<li>CHW: Single 3D numpy array in form Channels x Height x Width</li>
+<li>NCHW: Single 4D numpy array in form Batch Size x Channels x Height x Width <em>note: If the batch size is larger than the supported max batch size, the function will attempt to split up the batch into smaller supported batches</em></li>
+<li>ZNCHW: Single 5D numpy array in the form Number of Batces x Batch size x Channels x Height x Width <em>note: if the batch size is larger than the supported max batch size, the function will error out</em></li>
+<li>LNCHW: List of 4D numpy arrays in form Batch Size x Channels x Height x Width <em>note: if the batch size is larger than the supported max batch size, the function will error out</em></li>
+<li>LLCHW: List of lists of 3D numpy arrays in form Channels x Height x Width <em>note: if the size of the inner lists are is larger than the supported max batch size, or the size of the inner lists are not uniform the function will error out</em></li>
+<li>LCHW: List of 3D numpy arrays in form Channels x Height x Width <em>note: If the size of the list is larger than the supported max batch size, the function will attempt to split up the list into smaller supported batches</em></li>
+</ul>
+</div></blockquote>
+<p>Provide a seperate array for each input layer</p>
+<p>If a preprocessor function table is registered with the engine at creation then before inference, each input data object (3D numpy array) will be passed into the user specified preprocessor function for the relevant input layer and inference will be run on the preprocessed data.</p>
+<p>If a postprocessor function table is registered with the engine at creation then before inference, each output data object (3D numpy array) will be passed into the user specified postprocessor function for the relevant output layer and the function will return the postprocessed data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_data</strong><strong>,</strong><strong>.. list/numpy.ndarray</strong> (<em>-</em>) – List or numpy array containing data in a supported format, multiple lists/np.ndarrays should be passed in if there are multiple input layers, one per layer in order of bindings</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Results of inference arranged in the same format the input data was</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">list/numpy.ndarray</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.log_error">
+<code class="descname">log_error</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.log_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.log_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper for printing engine errors</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg str</strong> (<em>-</em>) – What to print</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Side-effects:</dt>
+<dd><ul class="first last simple">
+<li>Prints message to console in the ERROR stream</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li>ValueError</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.log_info">
+<code class="descname">log_info</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.log_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.log_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper for printing engine status</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg str</strong> (<em>-</em>) – What to print</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Side-effects:</dt>
+<dd><ul class="first last simple">
+<li>Prints message to console in the INFO stream</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.log_warn">
+<code class="descname">log_warn</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.log_warn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.log_warn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper for printing engine warnings</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>msg str</strong> (<em>-</em>) – What to print</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Side-effects:</dt>
+<dd><ul class="first last simple">
+<li>Prints message to console in the WARNING stream</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the TensorRT Engine to a PLAN file</p>
+<p>Saves the TensorRT Engine to a PLAN file that can be used later.
+<em>Note:</em> This saves the only the internal TensorRT engine in the class
+not the Engine object and all provided settings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path str</strong> (<em>-</em>) – Desired path to save file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.supported_data_format">
+<code class="descname">supported_data_format</code><span class="sig-paren">(</span><em>*input_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.supported_data_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.supported_data_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dectects wether the provided data is one of the supported types</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_data tuple Tuple of lists of data for input layers</strong> (<em>-</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">None</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Side-Effects:</dt>
+<dd><ul class="first last simple">
+<li>Sets the input format detected (LLCHW, LNCHW, LCHW, ZNCHW, NCHW, CHW)</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><em>- ``Value Error``</em> – Unsupported data format</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.transform_to_LNCHW">
+<code class="descname">transform_to_LNCHW</code><span class="sig-paren">(</span><em>*input_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.transform_to_LNCHW"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.transform_to_LNCHW" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts supported data formats to LNCHW</p>
+<p>Converts data from LLCHW, LCHW, ZNCHW, NCHW, CHW to LNCHW (List of batches)</p>
+<p>For LLCHW, ZNCHW, LNCHW; batch size (Length of internal lists) must be smaller than
+the engine’s max batch size (default: 1)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_data tuple Tuple of lists of data for input layers</strong> (<em>-</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Data formated as a list of batches for inference</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">list</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><em>- ``Value Error``</em> – Batch size too large</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.uniform_data_format">
+<code class="descname">uniform_data_format</code><span class="sig-paren">(</span><em>*input_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.uniform_data_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.uniform_data_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that the data format is uniform accross all input layers and
+that it is uniform accross batches</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_data tuple Tuple of lists of data for input layers</strong> (<em>-</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">None</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><em>- ``Value Error``</em> – If number of batches, batch size or CHW dims differ or if the batch size is too big</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tensorrt.lite.Engine.verify_data_type">
+<code class="descname">verify_data_type</code><span class="sig-paren">(</span><em>input_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorrt/lite/engine.html#Engine.verify_data_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorrt.lite.Engine.verify_data_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies if the data type is the expected type for the engine</p>
+<p>Verifies if the data type is the expected type for the engine,
+will attempt to convert the data to the expected type.</p>
+<p>Will provide a warning if a different data type is detected.
+May be the cause of incorrect results from the engine, if the
+data cannot be converted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_data list</strong> (<em>-</em>) – List of LNCHW data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of LNCHW data with the correct type</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><ul class="simple">
+<li><code class="docutils literal"><span class="pre">list</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Side-Effects:</dt>
+<dd><ul class="first last simple">
+<li>If data type is changed, warning will be printed in the engine logger,
+make sure logger severity is to at least warning to see.</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="parsers.html" class="btn btn-neutral float-right" title="tensorrt.parsers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="utils.html" class="btn btn-neutral" title="tensorrt.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, NVIDIA Corporation.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

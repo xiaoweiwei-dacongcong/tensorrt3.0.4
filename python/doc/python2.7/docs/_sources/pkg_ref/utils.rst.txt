@@ -1,0 +1,38 @@
+tensorrt.utils
+================
+
+The :mod:`utils` package contains higher level code designed to remove much of the boilder plate
+needed to make a TensorRT engine.
+
+.. automodule:: tensorrt.utils
+.. currentmodule:: tensorrt.utils
+
+Parsing Utilities
+------------------
+
+Caffe Model to TensorRT Engine
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: caffe_to_trt_engine
+
+UFF Model Stream to TensorRT Engine
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: uff_to_trt_engine
+
+UFF File to TensorRT Engine
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: uff_file_to_trt_engine
+
+Saving and Loading Models
+----------------------------
+
+Load Engine from File
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: load_engine
+
+Save Engine to File
+~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: write_engine_to_file
+
+Load Weights from File
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: load_weights
